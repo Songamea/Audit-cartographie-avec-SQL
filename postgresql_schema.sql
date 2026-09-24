@@ -1,6 +1,7 @@
 -- TP Audit et cartographie des donnees
 -- Source : pc_captv_p.csv, Bordeaux Metropole
--- Execution : psql -d <base> -f postgresql_schema.sql
+-- Execution locale : psql -d transport_velo -f postgresql_schema.sql
+-- Execution Docker : ce fichier est monte dans /docker-entrypoint-initdb.d/
 
 BEGIN;
 
@@ -33,8 +34,8 @@ CREATE TABLE staging_sensor_source (
     mdate text
 );
 
--- Executer depuis le dossier contenant pc_captv_p.csv.
-\copy staging_sensor_source FROM 'pc_captv_p.csv' WITH (FORMAT csv, HEADER true, DELIMITER ';', QUOTE '"', ESCAPE '"', NULL '')
+-- Le CSV est monte par docker-compose dans le meme repertoire d'initialisation.
+\copy staging_sensor_source FROM '/docker-entrypoint-initdb.d/pc_captv_p.csv' WITH (FORMAT csv, HEADER true, DELIMITER ';', QUOTE '"', ESCAPE '"', NULL '')
 
 INSERT INTO sensor_type (code, label)
 SELECT DISTINCT trim(sensor_type), trim(sensor_type)
