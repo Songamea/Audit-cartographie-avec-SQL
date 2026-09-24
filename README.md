@@ -58,19 +58,18 @@ Relations :
 
 La separation des referentiels evite de repeter les libelles de type et permet de controler les valeurs par des cles etrangeres. `gid` est la cle primaire technique de la source ; `ident` est une cle candidate fonctionnelle rendue unique.
 
+**Lecture des cardinalites :** `1 a N` signifie qu'une occurrence de la premiere entite peut etre reliee a plusieurs occurrences de la seconde. `1 a 0..1` signifie qu'une occurrence peut etre reliee a zero ou une seule occurrence. Une relation `N a N` signifierait que plusieurs occurrences des deux entites peuvent etre associees ; elle n'est pas necessaire dans ce modele.
+
 ## 5. Modele conceptuel
 
 ```mermaid
-erDiagram
-    SENSOR_TYPE ||--o{ SENSOR : qualifie
-    TRAFFIC_ZONE ||--o{ SENSOR : localise
-    SENSOR ||--o| SENSOR_MEASUREMENT : possede
-
-    SENSOR_TYPE { string code PK string label }
-    TRAFFIC_ZONE { integer zone_code PK string source_label }
-    SENSOR { integer gid PK string ident UK string libelle string type_code FK integer zone_code FK numeric latitude numeric longitude jsonb geo_shape timestamptz cdate timestamptz mdate }
-    SENSOR_MEASUREMENT { integer sensor_gid PK integer comptage_5m timestamptz observed_at }
+flowchart LR
+    T[SENSOR_TYPE] -->|1 a N : qualifie| S[SENSOR]
+    Z[TRAFFIC_ZONE] -->|1 a N : localise| S
+    S -->|1 a 0..1 : possede| M[SENSOR_MEASUREMENT]
 ```
+
+Dans ce diagramme, les fleches remplacent les doubles traits de la notation precedente. Elles indiquent le sens de la relation, tandis que les textes sur les fleches indiquent les cardinalites. Par exemple, un `SENSOR_TYPE` qualifie plusieurs `SENSOR`, mais chaque `SENSOR` possede un seul type. De meme, un `SENSOR` peut ne pas avoir de mesure dans le CSV, ou en avoir une seule dans le modele actuel.
 
 ## 6. Modele logique
 
