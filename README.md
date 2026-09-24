@@ -64,12 +64,12 @@ La separation des referentiels evite de repeter les libelles de type et permet d
 
 ```mermaid
 flowchart LR
-    T[SENSOR_TYPE] -->|1 a N : qualifie| S[SENSOR]
-    Z[TRAFFIC_ZONE] -->|1 a N : localise| S
-    S -->|1 a 0..1 : possede| M[SENSOR_MEASUREMENT]
+    T["SENSOR_TYPE<br/>code PK<br/>label"] -->|"1 a N : qualifie"| S["SENSOR<br/>gid PK<br/>ident UNIQUE<br/>libelle<br/>type_code FK<br/>zone_code FK<br/>latitude<br/>longitude<br/>geo_shape<br/>cdate<br/>mdate"]
+    Z["TRAFFIC_ZONE<br/>zone_code PK<br/>source_label"] -->|"1 a N : localise"| S
+    S -->|"1 a 0..1 : possede"| M["SENSOR_MEASUREMENT<br/>sensor_gid PK, FK<br/>comptage_5m<br/>observed_at"]
 ```
 
-Dans ce diagramme, les fleches remplacent les doubles traits de la notation precedente. Elles indiquent le sens de la relation, tandis que les textes sur les fleches indiquent les cardinalites. Par exemple, un `SENSOR_TYPE` qualifie plusieurs `SENSOR`, mais chaque `SENSOR` possede un seul type. De meme, un `SENSOR` peut ne pas avoir de mesure dans le CSV, ou en avoir une seule dans le modele actuel.
+Dans ce diagramme, les entites et leurs attributs principaux sont conserves comme dans la version precedente. Les fleches remplacent les doubles traits et les cardinalites sont ecrites en toutes lettres sur les relations. Par exemple, un `SENSOR_TYPE` qualifie plusieurs `SENSOR`, mais chaque `SENSOR` possede un seul type. De meme, un `SENSOR` peut ne pas avoir de mesure dans le CSV, ou en avoir une seule dans le modele actuel.
 
 ## 6. Modele logique
 
