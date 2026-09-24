@@ -1,0 +1,44 @@
+Project transport_velo_bordeaux {
+  database_type: 'PostgreSQL'
+  Note: 'Modele logique derive de pc_captv_p.csv'
+}
+
+Table sensor_type {
+  code varchar(30) [pk]
+  label varchar(120) [not null]
+}
+
+Table traffic_zone {
+  zone_code integer [pk]
+  source_label varchar(30) [not null]
+}
+
+Table sensor {
+  gid integer [pk]
+  ident varchar(30) [not null, unique]
+  libelle text [not null]
+  type_code varchar(30) [not null]
+  zone_code integer [not null]
+  latitude numeric(10,7) [not null]
+  longitude numeric(10,7) [not null]
+  geo_point_source text [not null]
+  geo_shape jsonb [not null]
+  cdate timestamptz [not null]
+  mdate timestamptz [not null]
+
+  indexes {
+    type_code
+    zone_code
+    (latitude, longitude)
+  }
+}
+
+Table sensor_measurement {
+  sensor_gid integer [pk]
+  comptage_5m integer
+  observed_at timestamptz [not null]
+}
+
+Ref: sensor.type_code > sensor_type.code
+Ref: sensor.zone_code > traffic_zone.zone_code
+Ref: sensor_measurement.sensor_gid - sensor.gid
