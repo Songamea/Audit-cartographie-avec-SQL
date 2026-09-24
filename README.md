@@ -84,7 +84,7 @@ Les champs geographiques sont indexes pour les recherches simples ou une migrati
 
 ## 7. Implementation PostgreSQL
 
-Le script [postgresql_schema.sql](postgresql_schema.sql) cree les tables, charge le CSV dans une table de staging, transforme les textes, alimente les tables normalisees, insere trois mesures de test et propose des requetes de verification. Depuis `psql`, se placer dans le dossier du projet avant execution et adapter au besoin le chemin de `\copy`.
+Le script [postgresql_schema.sql](postgresql_schema.sql) cree les tables, charge le CSV dans une table de staging, transforme les textes, alimente les tables normalisees, insere deux mesures de test et propose des requetes de verification. Depuis `psql`, se placer dans le dossier du projet avant execution et adapter au besoin le chemin de `\copy`.
 
 ## 8. Cartographie globale
 
