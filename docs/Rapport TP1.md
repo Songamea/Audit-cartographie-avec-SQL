@@ -1,3 +1,5 @@
+**Auteurs** : Mathias BERNARDIN, Leonardo ANTUNES BATARDA
+
 # TP - Audit et cartographie des donnees
 
 ## 1. Sujet, contexte et objectif
