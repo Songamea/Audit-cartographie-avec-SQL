@@ -21,7 +21,6 @@ La fiche officielle indique que les capteurs automatiques peuvent produire des c
 
 - 419 lignes et 10 colonnes.
 - 419 valeurs `ident` uniques.
-- Types : 329 `PONCTUEL`, 33 `BOUCLE`, 57 `4G`.
 - `Geo Shape` est present pour les 419 lignes.
 - `comptage_5m` est renseigne pour 31 lignes et vide pour 388 lignes.
 - `zone = 0` pour 329 lignes ; les autres lignes sont rattachees a des codes de zones.
