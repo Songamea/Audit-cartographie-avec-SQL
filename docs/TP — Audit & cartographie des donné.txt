@@ -1,0 +1,104 @@
+TP — Audit & cartographie des données
+Objectif
+À partir d’un sujet de votre choix, recherchez un ou plusieurs jeux de données réels et réalisez leur cartographie.
+
+Vous devez être capables de passer de données réelles à une modélisation structurée, puis à une base PostgreSQL.
+
+1. Choisir un sujet
+Choisissez un sujet métier ou sociétal :
+
+Transport
+Immobilier
+Éducation
+E-commerce
+Banque
+Tourisme
+Sport
+Environnement
+Énergie
+Emploi
+Agriculture
+Autre
+Recherchez un ou plusieurs jeux de données correspondant à votre sujet.
+
+2. Identifier les sources
+Pour chaque source, documentez :
+
+Nom de la source
+Organisation / origine
+URL
+Format : CSV, Excel, JSON, SQL, etc.
+Nature : structurée ou semi-structurée
+Description
+3. Réaliser le dictionnaire de données
+Analysez les principales colonnes de vos données.
+
+Champ	Description	Type	Exemple
+...	...	...	...
+Le dictionnaire doit permettre de comprendre clairement la signification des données.
+
+4. Identifier les entités, attributs et relations
+À partir des données, identifiez :
+
+les entités ;
+leurs attributs ;
+les relations ;
+les cardinalités.
+Vous devez être capables de justifier vos choix.
+
+Exemple :
+
+CLIENT 1 ───── N COMMANDE
+5. Réaliser les modèles
+Utilisez un outil de modélisation, par exemple dbdiagram.io.
+
+Modèle conceptuel
+Représentez :
+
+Entités
+Attributs principaux
+Relations
+Cardinalités
+Modèle logique
+Transformez le modèle conceptuel en :
+
+Tables
+Colonnes
+Clés primaires
+Clés étrangères
+Relations
+6. Implémenter le modèle dans PostgreSQL
+Créez une base de données PostgreSQL correspondant à votre modèle logique.
+
+Vous devez :
+
+créer les tables ;
+définir les types de données ;
+définir les clés primaires et étrangères ;
+ajouter les contraintes pertinentes ;
+insérer quelques données de test ;
+vérifier que les relations fonctionnent.
+Vous pouvez utiliser pgAdmin pour administrer la base.
+
+Livrables
+Vous devez remettre :
+
+Présentation du sujet
+Contexte, problématique et objectif.
+
+Sources de données
+Origine, URL, formats et nature des données.
+
+Dictionnaire de données
+
+Modèle conceptuel
+Diagramme réalisé avec dbdiagram.io ou un outil équivalent.
+
+Modèle logique
+Tables, attributs, PK, FK et relations.
+
+Base PostgreSQL
+Script de création de la base et des tables + quelques données de test.
+
+Cartographie globale
+Vue d’ensemble du cheminement :
