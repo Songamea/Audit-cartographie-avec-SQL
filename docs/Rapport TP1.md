@@ -61,8 +61,7 @@ La separation des referentiels evite de repeter les libelles de type et permet d
 **Lecture des cardinalites :** `1 a N` signifie qu'une occurrence de la premiere entite peut etre reliee a plusieurs occurrences de la seconde. `1 a 0..1` signifie qu'une occurrence peut etre reliee a zero ou une seule occurrence. Une relation `N a N` signifierait que plusieurs occurrences des deux entites peuvent etre associees ; elle n'est pas necessaire dans ce modele.
 
 ## 5. Modele conceptuel
-![alt text](diagrame.png)
-
+![image non chargée (voir Data/diagrame.png)](../data/diagrame.png)
 
 Dans ce diagramme, les entites et leurs attributs principaux sont conserves comme dans la version precedente. Les fleches remplacent les doubles traits et les cardinalites sont ecrites en toutes lettres sur les relations. Par exemple, un `SENSOR_TYPE` qualifie plusieurs `SENSOR`, mais chaque `SENSOR` possede un seul type. De meme, un `SENSOR` peut ne pas avoir de mesure dans le CSV, ou en avoir une seule dans le modele actuel.
 
@@ -77,7 +76,7 @@ Les champs geographiques sont indexes pour les recherches simples ou une migrati
 
 ## 7. Implementation PostgreSQL
 
-Le script [postgresql_schema.sql](postgresql_schema.sql) cree les tables, charge le CSV dans une table de staging, transforme les textes, alimente les tables normalisees, insere deux mesures de test et propose des requetes de verification. Depuis `psql`, se placer dans le dossier du projet avant execution et adapter au besoin le chemin de `\copy`.
+Le script [postgresql_schema.sql](../database/sql/postgresql_schema.sql) cree les tables, charge le CSV dans une table de staging, transforme les textes, alimente les tables normalisees, insere deux mesures de test et propose des requetes de verification. Depuis `psql`, se placer dans le dossier du projet avant execution et adapter au besoin le chemin de `\copy`.
 
 ## 8. Cartographie globale
 
