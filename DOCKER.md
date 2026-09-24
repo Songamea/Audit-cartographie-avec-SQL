@@ -19,7 +19,7 @@ docker compose exec postgres psql -U audit_user -d transport_velo
 Parametres de connexion :
 
 - Hote : `localhost`
-- Port : `5432`
+- Port : `5433`
 - Base : `transport_velo`
 - Utilisateur : `audit_user`
 - Mot de passe : `audit_password`

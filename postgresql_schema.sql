@@ -88,7 +88,7 @@ CREATE TABLE sensor_measurement (
 );
 
 INSERT INTO sensor_measurement (sensor_gid, comptage_5m, observed_at)
-SELECT gid, nullif(trim(comptage_5m), '')::integer, mdate
+SELECT gid::integer, nullif(trim(comptage_5m), '')::integer, mdate::timestamptz
 FROM staging_sensor_source
 WHERE nullif(trim(comptage_5m), '') IS NOT NULL;
 
