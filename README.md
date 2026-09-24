@@ -61,23 +61,8 @@ La separation des referentiels evite de repeter les libelles de type et permet d
 **Lecture des cardinalites :** `1 a N` signifie qu'une occurrence de la premiere entite peut etre reliee a plusieurs occurrences de la seconde. `1 a 0..1` signifie qu'une occurrence peut etre reliee a zero ou une seule occurrence. Une relation `N a N` signifierait que plusieurs occurrences des deux entites peuvent etre associees ; elle n'est pas necessaire dans ce modele.
 
 ## 5. Modele conceptuel
+![alt text](diagrame.png)
 
-```mermaid
-flowchart TD
-    %% Définition des tables avec structure à 3 colonnes
-    SENSOR_TYPE["<table border='1' cellspacing='0' cellpadding='5'><tr><th colspan='3'><b>SENSOR_TYPE</b></th></tr><tr><td>string</td><td><b>code</b></td><td>PK</td></tr><tr><td>string</td><td>label</td><td></td></tr></table>"]
-
-    TRAFFIC_ZONE["<table border='1' cellspacing='0' cellpadding='5'><tr><th colspan='3'><b>TRAFFIC_ZONE</b></th></tr><tr><td>integer</td><td><b>zone_code</b></td><td>PK</td></tr><tr><td>string</td><td>source_label</td><td></td></tr></table>"]
-
-    SENSOR["<table border='1' cellspacing='0' cellpadding='5'><tr><th colspan='3'><b>SENSOR</b></th></tr><tr><td>integer</td><td><b>gid</b></td><td>PK</td></tr><tr><td>string</td><td>ident</td><td>UK</td></tr><tr><td>string</td><td>libelle</td><td></td></tr><tr><td>string</td><td>type_code</td><td>FK</td></tr><tr><td>integer</td><td>zone_code</td><td>FK</td></tr><tr><td>numeric</td><td>latitude</td><td></td></tr><tr><td>numeric</td><td>longitude</td><td></td></tr><tr><td>jsonb</td><td>geo_shape</td><td></td></tr><tr><td>timestamptz</td><td>cdate</td><td></td></tr><tr><td>timestamptz</td><td>mdate</td><td></td></tr></table>"]
-
-    SENSOR_MEASUREMENT["<table border='1' cellspacing='0' cellpadding='5'><tr><th colspan='3'><b>SENSOR_MEASUREMENT</b></th></tr><tr><td>integer</td><td><b>sensor_gid</b></td><td>PK</td></tr><tr><td>integer</td><td>comptage_5m</td><td></td></tr><tr><td>timestamptz</td><td>observed_at</td><td></td></tr></table>"]
-
-    %% Liens avec cardinalités, verbes et flèches
-    SENSOR_TYPE -- "1  ━━  qualifie  ━━►  0..N" --> SENSOR
-    TRAFFIC_ZONE -- "1  ━━  localise  ━━►  0..N" --> SENSOR
-    SENSOR -- "1  ━━  possede  ━━►  0..1" --> SENSOR_MEASUREMENT
-```
 
 Dans ce diagramme, les entites et leurs attributs principaux sont conserves comme dans la version precedente. Les fleches remplacent les doubles traits et les cardinalites sont ecrites en toutes lettres sur les relations. Par exemple, un `SENSOR_TYPE` qualifie plusieurs `SENSOR`, mais chaque `SENSOR` possede un seul type. De meme, un `SENSOR` peut ne pas avoir de mesure dans le CSV, ou en avoir une seule dans le modele actuel.
 
