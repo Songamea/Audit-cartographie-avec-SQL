@@ -29,7 +29,9 @@ def load_sensors() -> list[dict]:
 def nearest_sensor(event: dict, sensors: list[dict]) -> dict:
     def distance(sensor: dict) -> float:
         point = sensor["Geo Point"].split(",")
-        return math.hypot(float(point[0]) - event["latitude"], float(point[1]) - event["longitude"])
+        return math.hypot(
+            float(point[0]) - event["latitude"], float(point[1]) - event["longitude"]
+        )
 
     sensor = min(sensors, key=distance)
     point = sensor["Geo Point"].split(",")
@@ -41,7 +43,9 @@ def nearest_sensor(event: dict, sensors: list[dict]) -> dict:
         "sensor_latitude": float(point[0]),
         "sensor_longitude": float(point[1]),
         "sensor_label": sensor["libelle"],
-        "comptage_5m": int(sensor["comptage_5m"]) if sensor["comptage_5m"].strip() else None,
+        "comptage_5m": (
+            int(sensor["comptage_5m"]) if sensor["comptage_5m"].strip() else None
+        ),
     }
 
 
@@ -62,7 +66,9 @@ def main() -> None:
         sensors = load_sensors()
         if not sensors:
             time.sleep(5)
-    with OUTPUT.open("a", encoding="utf-8") as output, RAW_OUTPUT.open("a", encoding="utf-8") as raw_output:
+    with OUTPUT.open("a", encoding="utf-8") as output, RAW_OUTPUT.open(
+        "a", encoding="utf-8"
+    ) as raw_output:
         for message in consumer:
             event = message.value
             raw_output.write(json.dumps(event) + "\n")

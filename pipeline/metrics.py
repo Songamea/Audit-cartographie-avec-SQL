@@ -6,7 +6,9 @@ import psycopg2
 from prometheus_client import Gauge, start_http_server
 
 RAW = Gauge("datalake_raw_records", "Number of raw API records in the Data Lake")
-AGGREGATED = Gauge("datalake_aggregated_records", "Number of aggregated records in the Data Lake")
+AGGREGATED = Gauge(
+    "datalake_aggregated_records", "Number of aggregated records in the Data Lake"
+)
 CLEAN = Gauge("postgres_clean_records", "Number of clean records in PostgreSQL")
 
 

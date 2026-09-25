@@ -16,9 +16,7 @@ def ensure_files() -> None:
     required = [COMPOSE_FILE, SQL_FILE, CSV_FILE]
     missing = [str(path.relative_to(ROOT)) for path in required if not path.exists()]
     if missing:
-        raise SystemExit(
-            "Fichiers requis absents :\n- " + "\n- ".join(missing)
-        )
+        raise SystemExit("Fichiers requis absents :\n- " + "\n- ".join(missing))
 
 
 def ensure_docker_available() -> None:

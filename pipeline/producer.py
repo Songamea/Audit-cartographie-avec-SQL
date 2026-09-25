@@ -56,7 +56,10 @@ def main() -> None:
             event = fetch_weather()
             producer.send(TOPIC, value=event).get(timeout=15)
             EVENTS.inc()
-            print(f"published event_id={event['event_id']} observed_at={event['observed_at']}", flush=True)
+            print(
+                f"published event_id={event['event_id']} observed_at={event['observed_at']}",
+                flush=True,
+            )
         except Exception as exc:
             ERRORS.inc()
             print(f"collection error: {exc}", flush=True)

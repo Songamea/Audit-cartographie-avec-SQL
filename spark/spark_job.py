@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import time
 from pathlib import Path
@@ -34,12 +36,27 @@ def load_to_postgres(rows: list[dict]) -> None:
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (event_id) DO NOTHING
                 """,
-                tuple(row.get(field) for field in (
-                    "event_id", "observed_at", "collected_at", "source", "temperature_c",
-                    "humidity_pct", "wind_speed_kmh", "precipitation_mm", "sensor_gid",
-                    "sensor_ident", "sensor_type", "zone", "sensor_latitude",
-                    "sensor_longitude", "sensor_label", "comptage_5m",
-                )),
+                tuple(
+                    row.get(field)
+                    for field in (
+                        "event_id",
+                        "observed_at",
+                        "collected_at",
+                        "source",
+                        "temperature_c",
+                        "humidity_pct",
+                        "wind_speed_kmh",
+                        "precipitation_mm",
+                        "sensor_gid",
+                        "sensor_ident",
+                        "sensor_type",
+                        "zone",
+                        "sensor_latitude",
+                        "sensor_longitude",
+                        "sensor_label",
+                        "comptage_5m",
+                    )
+                ),
             )
     LOADS.inc()
 
@@ -57,7 +74,10 @@ def process(spark: SparkSession) -> None:
         .withColumn("temperature_c", col("temperature_c").cast(DoubleType()))
         .withColumn("humidity_pct", col("humidity_pct").cast(DoubleType()))
         .withColumn("wind_speed_kmh", col("wind_speed_kmh").cast(DoubleType()))
-        .withColumn("precipitation_mm", coalesce(col("precipitation_mm").cast(DoubleType()), lit(0.0)))
+        .withColumn(
+            "precipitation_mm",
+            coalesce(col("precipitation_mm").cast(DoubleType()), lit(0.0)),
+        )
         .withColumn("sensor_gid", col("sensor_gid").cast(IntegerType()))
         .withColumn("zone", col("zone").cast(IntegerType()))
         .withColumn("comptage_5m", col("comptage_5m").cast(IntegerType()))
@@ -73,7 +93,11 @@ def process(spark: SparkSession) -> None:
 
 if __name__ == "__main__":
     start_http_server(9104)
-    spark = SparkSession.builder.appName("DataSuiteWeatherCleaning").master("local[*]").getOrCreate()
+    spark = (
+        SparkSession.builder.appName("DataSuiteWeatherCleaning")
+        .master("local[*]")
+        .getOrCreate()
+    )
     spark.sparkContext.setLogLevel("WARN")
     while True:
         try:
