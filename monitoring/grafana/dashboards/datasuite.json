@@ -1,0 +1,14 @@
+{
+  "title": "DataSuite - Pipeline TP2",
+  "uid": "datasuite-tp2",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {"type":"stat","title":"Raw API records","gridPos":{"x":0,"y":0,"w":6,"h":4},"targets":[{"expr":"datalake_raw_records","refId":"A"}]},
+    {"type":"stat","title":"Aggregated records","gridPos":{"x":6,"y":0,"w":6,"h":4},"targets":[{"expr":"datalake_aggregated_records","refId":"A"}]},
+    {"type":"stat","title":"Clean PostgreSQL records","gridPos":{"x":12,"y":0,"w":6,"h":4},"targets":[{"expr":"postgres_clean_records","refId":"A"}]},
+    {"type":"timeseries","title":"Pipeline throughput","gridPos":{"x":0,"y":4,"w":12,"h":8},"targets":[{"expr":"rate(api_events_total[5m])","legendFormat":"API events/s","refId":"A"},{"expr":"rate(aggregated_events_total[5m])","legendFormat":"Aggregated events/s","refId":"B"}]},
+    {"type":"timeseries","title":"PostgreSQL activity","gridPos":{"x":12,"y":4,"w":12,"h":8},"targets":[{"expr":"pg_stat_database_tup_inserted{datname=\"transport_velo\"}","legendFormat":"Rows inserted","refId":"A"},{"expr":"pg_stat_database_numbackends{datname=\"transport_velo\"}","legendFormat":"Connections","refId":"B"}]}
+  ]
+}

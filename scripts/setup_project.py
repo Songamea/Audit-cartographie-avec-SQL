@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPOSE_FILE = ROOT / "docker" / "docker-compose.yml"
+COMPOSE_FILE = ROOT / "docker-compose.yml"
 SQL_FILE = ROOT / "database" / "sql" / "postgresql_schema.sql"
 CSV_FILE = ROOT / "data" / "pc_captv_p.csv"
 
@@ -44,7 +44,7 @@ def main() -> None:
     print(f"Docker Compose : {COMPOSE_FILE}")
     print(f"SQL : {SQL_FILE}")
     print(f"CSV : {CSV_FILE}")
-    print("\nLancement du conteneur PostgreSQL...")
+    print("\nLancement de la plateforme DataSuite...")
 
     subprocess.run(
         ["docker", "compose", "-f", str(COMPOSE_FILE), "up", "-d", "--remove-orphans"],
@@ -52,16 +52,14 @@ def main() -> None:
         check=True,
     )
 
-    print("\n✅ Base PostgreSQL démarrée.")
-    print("Connexion attendue :")
-    print("  - hôte : localhost")
-    print("  - port : 5433")
-    print("  - base : transport_velo")
-    print("  - utilisateur : audit_user")
-    print("  - mot de passe : audit_password")
+    print("\n✅ Plateforme DataSuite démarrée.")
+    print("  - PostgreSQL : localhost:5433")
+    print("  - Metabase : http://localhost:3001")
+    print("  - Grafana : http://localhost:3000 (admin/admin)")
+    print("  - Prometheus : http://localhost:9090")
     print("\nPour vérifier :")
-    print("  docker compose -f docker/docker-compose.yml ps")
-    print("  docker compose -f docker/docker-compose.yml exec postgres psql -U audit_user -d transport_velo")
+    print("  docker compose ps")
+    print("  docker compose exec postgres psql -U audit_user -d transport_velo")
 
 
 if __name__ == "__main__":
