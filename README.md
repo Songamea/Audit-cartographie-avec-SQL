@@ -85,6 +85,7 @@ Une fois le projet lancé, tu peux ouvrir le rapport détaillé ici :
 ## 4. Rôle des fichiers principaux
 
 - [data/pc_captv_p.csv](data/pc_captv_p.csv) : données source
+- [data/sample/weather_sensor_clean_sample.csv](data/sample/weather_sensor_clean_sample.csv) : échantillon partageable de 10 événements TP2
 - [database/sql/postgresql_schema.sql](database/sql/postgresql_schema.sql) : crée les tables et charge le CSV
 - [database/models/modele_logique.dbml](database/models/modele_logique.dbml) : modèle logique
 - [docker/tp2/docker-compose.yml](docker/tp2/docker-compose.yml) : orchestration Docker de la plateforme TP2

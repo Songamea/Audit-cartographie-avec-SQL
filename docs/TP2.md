@@ -76,6 +76,8 @@ docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user
 
 L'indicateur Raw vs Clean est disponible dans Grafana via `datalake_raw_records` et `postgres_clean_records`. Les compteurs agreges sont exposes par `metrics.py` sur le port 9105 et collectes par Prometheus.
 
+Un échantillon de 10 événements propres est versionné dans [data/sample/weather_sensor_clean_sample.csv](../data/sample/weather_sensor_clean_sample.csv). Il permet de partager un résultat concret sans publier les volumes Docker locaux.
+
 ## Arborescence TP2
 
 ```text
