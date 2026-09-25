@@ -45,7 +45,16 @@ def main() -> None:
     print("\nLancement de la plateforme DataSuite...")
 
     subprocess.run(
-        ["docker", "compose", "-f", str(COMPOSE_FILE), "up", "-d", "--build", "--remove-orphans"],
+        [
+            "docker",
+            "compose",
+            "-f",
+            str(COMPOSE_FILE),
+            "up",
+            "-d",
+            "--build",
+            "--remove-orphans",
+        ],
         cwd=str(ROOT),
         check=True,
     )
@@ -57,7 +66,9 @@ def main() -> None:
     print("  - Prometheus : http://localhost:9090")
     print("\nPour vérifier :")
     print("  docker compose -f docker/tp2/docker-compose.yml ps")
-    print("  docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo")
+    print(
+        "  docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo"
+    )
 
 
 if __name__ == "__main__":
