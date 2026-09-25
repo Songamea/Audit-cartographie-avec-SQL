@@ -48,8 +48,8 @@ Services Docker : Kafka, Zookeeper, producer, source2, aggregator, Spark/PySpark
 Prerequis : Docker Desktop demarre et Docker Compose v2.
 
 ```powershell
-docker compose up -d --build
-docker compose ps
+docker compose -f docker/tp2/docker-compose.yml up -d --build
+docker compose -f docker/tp2/docker-compose.yml ps
 ```
 
 Le script historique est aussi disponible :
@@ -70,8 +70,8 @@ Le premier demarrage peut prendre quelques minutes pour construire les images et
 Requetes de controle :
 
 ```powershell
-docker compose exec postgres psql -U audit_user -d transport_velo -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
-docker compose exec postgres psql -U audit_user -d transport_velo -c "SELECT event_id, observed_at, sensor_ident, temperature_c, comptage_5m FROM weather_sensor_clean ORDER BY observed_at DESC LIMIT 5;"
+docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
+docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT event_id, observed_at, sensor_ident, temperature_c, comptage_5m FROM weather_sensor_clean ORDER BY observed_at DESC LIMIT 5;"
 ```
 
 L'indicateur Raw vs Clean est disponible dans Grafana via `datalake_raw_records` et `postgres_clean_records`. Les compteurs agreges sont exposes par `metrics.py` sur le port 9105 et collectes par Prometheus.
@@ -84,7 +84,8 @@ spark/                    Dockerfile et job PySpark
 data-lake/                point de montage du Data Lake
 monitoring/               configuration Prometheus et dashboard Grafana
 database/sql/tp2_schema.sql table PostgreSQL propre
-docker-compose.yml        orchestration complete
+docker/tp2/docker-compose.yml orchestration TP2
+docker/tp1/docker-compose.yml orchestration TP1
 ```
 
 ## Limites connues

@@ -1,11 +1,11 @@
-# PostgreSQL avec Docker
+# PostgreSQL avec Docker - TP1
 
 ## Demarrer la base
 
 Depuis ce dossier :
 
 ```powershell
-docker compose up -d
+docker compose -f docker/tp1/docker-compose.yml up -d
 ```
 
 Le conteneur cree automatiquement la base `transport_velo`, les tables, les contraintes et les donnees de test au premier demarrage.
@@ -13,7 +13,7 @@ Le conteneur cree automatiquement la base `transport_velo`, les tables, les cont
 ## Se connecter avec psql
 
 ```powershell
-docker compose exec postgres psql -U audit_user -d transport_velo
+docker compose -f docker/tp1/docker-compose.yml exec postgres psql -U audit_user -d transport_velo
 ```
 
 Parametres de connexion :
@@ -47,8 +47,8 @@ LIMIT 10;
 Les scripts du dossier `/docker-entrypoint-initdb.d/` ne sont executes que lorsque le volume est vide. Pour rejouer le chargement apres une modification du SQL ou du CSV :
 
 ```powershell
-docker compose down -v
-docker compose up -d
+docker compose -f docker/tp1/docker-compose.yml down -v
+docker compose -f docker/tp1/docker-compose.yml up -d
 ```
 
 Cette commande supprime le volume PostgreSQL local du projet.
@@ -56,5 +56,5 @@ Cette commande supprime le volume PostgreSQL local du projet.
 ## Arreter le service
 
 ```powershell
-docker compose down
+docker compose -f docker/tp1/docker-compose.yml down
 ```

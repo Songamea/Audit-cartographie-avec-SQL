@@ -10,14 +10,14 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ../database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
-      - ../data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
+      - postgres_data_tp1:/var/lib/postgresql/data
+      - ../../database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
+      - ../../data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U audit_user -d transport_velo" ]
+      test: ["CMD-SHELL", "pg_isready -U audit_user -d transport_velo"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  postgres_data:
+  postgres_data_tp1:

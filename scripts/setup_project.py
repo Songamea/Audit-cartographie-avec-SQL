@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lance la base PostgreSQL du projet via Docker Compose."""
+"""Lance la plateforme TP2 via Docker Compose."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPOSE_FILE = ROOT / "docker-compose.yml"
+COMPOSE_FILE = ROOT / "docker" / "tp2" / "docker-compose.yml"
 SQL_FILE = ROOT / "database" / "sql" / "postgresql_schema.sql"
 CSV_FILE = ROOT / "data" / "pc_captv_p.csv"
 
@@ -45,7 +45,7 @@ def main() -> None:
     print("\nLancement de la plateforme DataSuite...")
 
     subprocess.run(
-        ["docker", "compose", "-f", str(COMPOSE_FILE), "up", "-d", "--remove-orphans"],
+        ["docker", "compose", "-f", str(COMPOSE_FILE), "up", "-d", "--build", "--remove-orphans"],
         cwd=str(ROOT),
         check=True,
     )
@@ -56,8 +56,8 @@ def main() -> None:
     print("  - Grafana : http://localhost:3000 (admin/admin)")
     print("  - Prometheus : http://localhost:9090")
     print("\nPour vérifier :")
-    print("  docker compose ps")
-    print("  docker compose exec postgres psql -U audit_user -d transport_velo")
+    print("  docker compose -f docker/tp2/docker-compose.yml ps")
+    print("  docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo")
 
 
 if __name__ == "__main__":

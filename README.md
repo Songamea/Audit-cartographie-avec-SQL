@@ -26,7 +26,8 @@ Audit-cartographie-avec-SQL/
 │   └── sql/
 │       └── postgresql_schema.sql
 ├── docker/
-│   └── docker-compose.yml
+│   ├── tp1/docker-compose.yml
+│   └── tp2/docker-compose.yml
 ├── scripts/
 │   ├── setup_project.py
 │   └── reset_db.ps1
@@ -59,7 +60,7 @@ Si cette commande ne fonctionne pas, il faut démarrer Docker Desktop ou install
 Depuis la racine du projet :
 
 ```powershell
-docker compose up -d --build
+docker compose -f docker/tp2/docker-compose.yml up -d --build
 ```
 
 Cette commande construit les images et lance toute la chaîne : collecte API, Kafka, source CSV, agrégation, Data Lake, Spark, PostgreSQL, Metabase, Prometheus et Grafana.
@@ -69,7 +70,7 @@ Le script `python .\scripts\setup_project.py` reste disponible comme raccourci e
 ### Étape 3 : vérifier la base
 
 ```powershell
-docker compose exec postgres psql -U audit_user -d transport_velo
+docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo
 ```
 
 ### Étape 4 : ouvrir le rapport complet
@@ -86,8 +87,8 @@ Une fois le projet lancé, tu peux ouvrir le rapport détaillé ici :
 - [data/pc_captv_p.csv](data/pc_captv_p.csv) : données source
 - [database/sql/postgresql_schema.sql](database/sql/postgresql_schema.sql) : crée les tables et charge le CSV
 - [database/models/modele_logique.dbml](database/models/modele_logique.dbml) : modèle logique
-- [docker-compose.yml](docker-compose.yml) : orchestration Docker de la plateforme TP2
-- [docker/docker-compose.yml](docker/docker-compose.yml) : configuration historique PostgreSQL du TP1
+- [docker/tp2/docker-compose.yml](docker/tp2/docker-compose.yml) : orchestration Docker de la plateforme TP2
+- [docker/tp1/docker-compose.yml](docker/tp1/docker-compose.yml) : configuration Docker PostgreSQL du TP1
 - [docs/DOCKER.md](docs/DOCKER.md) : fiche technique Docker
 - [scripts/setup_project.py](scripts/setup_project.py) : script de lancement automatique
 
@@ -95,7 +96,7 @@ Une fois le projet lancé, tu peux ouvrir le rapport détaillé ici :
 
 ## 5. Ce qui se passe concrètement
 
-Le script Python ne remplace pas le SQL. Pour le TP2, le Compose racine orchestre l'ensemble des services.
+Le script Python ne remplace pas le SQL. Pour le TP2, le Compose `docker/tp2/docker-compose.yml` orchestre l'ensemble des services.
 
 Il fait :
 1. vérifier l’environnement

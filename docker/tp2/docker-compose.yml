@@ -18,11 +18,11 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     volumes:
-      - kafka_data:/tmp/kraft-combined-logs
+      - kafka_data_tp2:/tmp/kraft-combined-logs
 
   postgres:
     image: postgres:16-alpine
-    container_name: audit-cartographie-postgres
+    container_name: audit-cartographie-postgres-tp2
     restart: unless-stopped
     environment:
       POSTGRES_DB: transport_velo
@@ -31,28 +31,30 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
-      - ./database/sql/tp2_schema.sql:/docker-entrypoint-initdb.d/02_tp2_schema.sql:ro
-      - ./data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
+      - postgres_data_tp2:/var/lib/postgresql/data
+      - ../../database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
+      - ../../database/sql/tp2_schema.sql:/docker-entrypoint-initdb.d/02_tp2_schema.sql:ro
+      - ../../data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U audit_user -d transport_velo" ]
+      test: ["CMD-SHELL", "pg_isready -U audit_user -d transport_velo"]
       interval: 5s
       timeout: 5s
       retries: 20
 
   source2:
-    build: ./pipeline
+    build:
+      context: ../../pipeline
     command: python source2.py
     volumes:
-      - ./data:/source-data:ro
-      - datalake_data:/data-lake
+      - ../../data:/source-data:ro
+      - datalake_data_tp2:/data-lake
     ports:
       - "9102:9102"
     restart: unless-stopped
 
   producer:
-    build: ./pipeline
+    build:
+      context: ../../pipeline
     command: python producer.py
     depends_on:
       - kafka
@@ -65,7 +67,8 @@ services:
     restart: unless-stopped
 
   aggregator:
-    build: ./pipeline
+    build:
+      context: ../../pipeline
     command: python aggregator.py
     depends_on:
       - kafka
@@ -74,13 +77,14 @@ services:
       KAFKA_BROKER: kafka:9092
       KAFKA_TOPIC: weather.bordeaux
     volumes:
-      - datalake_data:/data-lake
+      - datalake_data_tp2:/data-lake
     ports:
       - "9103:9103"
     restart: unless-stopped
 
   spark:
-    build: ./spark
+    build:
+      context: ../../spark
     command: /opt/spark/bin/spark-submit /opt/spark/jobs/spark_job.py
     depends_on:
       postgres:
@@ -93,13 +97,14 @@ services:
       POSTGRES_USER: audit_user
       POSTGRES_PASSWORD: audit_password
     volumes:
-      - datalake_data:/data-lake
+      - datalake_data_tp2:/data-lake
     ports:
       - "9104:9104"
     restart: unless-stopped
 
   metrics:
-    build: ./pipeline
+    build:
+      context: ../../pipeline
     command: python metrics.py
     depends_on:
       postgres:
@@ -110,7 +115,7 @@ services:
       POSTGRES_USER: audit_user
       POSTGRES_PASSWORD: audit_password
     volumes:
-      - datalake_data:/data-lake:ro
+      - datalake_data_tp2:/data-lake:ro
     ports:
       - "9105:9105"
     restart: unless-stopped
@@ -135,8 +140,8 @@ services:
       - metrics
       - postgres-exporter
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
+      - ../../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data_tp2:/prometheus
     ports:
       - "9090:9090"
 
@@ -149,9 +154,9 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data_tp2:/var/lib/grafana
+      - ../../monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"
 
@@ -163,14 +168,14 @@ services:
     environment:
       MB_DB_FILE: /metabase-data/metabase.db
     volumes:
-      - metabase_data:/metabase-data
+      - metabase_data_tp2:/metabase-data
     ports:
       - "3001:3000"
 
 volumes:
-  kafka_data:
-  postgres_data:
-  datalake_data:
-  prometheus_data:
-  grafana_data:
-  metabase_data:
+  kafka_data_tp2:
+  postgres_data_tp2:
+  datalake_data_tp2:
+  prometheus_data_tp2:
+  grafana_data_tp2:
+  metabase_data_tp2:
