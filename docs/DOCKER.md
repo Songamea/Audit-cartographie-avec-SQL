@@ -1,7 +1,7 @@
 # Docker — parcours TP1 puis TP2
 
-Le projet utilise deux fichiers Compose séparés qui partagent le même volume
-PostgreSQL, nommé `tp1_postgres_data_tp1` :
+Le projet utilise deux fichiers Compose séparés. Le TP1 démarre PostgreSQL
+dans le conteneur `Velib-Bordeaux`, sur un réseau partagé :
 
 - `docker/tp1/docker-compose.yml` : PostgreSQL et le modèle relationnel du TP1 ;
 - `docker/tp2/docker-compose.yml` : plateforme complète du TP2.
@@ -10,12 +10,12 @@ Les scripts fournissent le parcours guidé :
 
 ```powershell
 python .\scripts\setup_tp1.py
-docker compose -f docker/tp1/docker-compose.yml down
 python .\scripts\setup_tp2.py
 ```
 
-La commande `down` retire le conteneur TP1, mais conserve le volume nommé.
-Le TP2 rattache ce même volume et ajoute son schéma à la base existante.
+Le conteneur `Velib-Bordeaux` doit rester démarré pendant le TP2. Le Compose
+TP2 rejoint son réseau, vérifie la base existante et y ajoute le schéma TP2 ;
+il ne démarre pas un deuxième PostgreSQL.
 
 ## TP1
 
@@ -36,10 +36,11 @@ SELECT COUNT(*) FROM sensor;
 SELECT type_code, COUNT(*) FROM sensor GROUP BY type_code ORDER BY type_code;
 ```
 
-Arrêter le TP1 avant le TP2 :
+Vérifier le conteneur et la persistance :
 
 ```powershell
-docker compose -f docker/tp1/docker-compose.yml down
+docker ps --filter "name=Velib-Bordeaux"
+docker volume inspect tp1_postgres_data_tp1
 ```
 
 ## TP2
@@ -49,15 +50,27 @@ docker compose -f docker/tp2/docker-compose.yml up -d --build
 docker compose -f docker/tp2/docker-compose.yml ps
 ```
 
-Le TP2 expose PostgreSQL sur `5433`, Grafana sur `3000`, Metabase sur `3001`
-et Prometheus sur `9090`.
+Le PostgreSQL du TP1 reste accessible sur `5433`. Le TP2 expose Grafana sur
+`3000`, Metabase sur `3001` et Prometheus sur `9090`. Pour accéder à la base
+pendant le TP2, utiliser le Compose TP1 :
+
+```powershell
+docker compose -f docker/tp1/docker-compose.yml exec postgres `
+  psql -U audit_user -d transport_velo
+```
 
 ## Arrêter ou réinitialiser
 
-`down` conserve les données. Pour arrêter TP2 :
+Arrêter le TP2 conserve PostgreSQL et ses données :
 
 ```powershell
 docker compose -f docker/tp2/docker-compose.yml down
+```
+
+Pour arrêter également PostgreSQL, toujours sans supprimer les données :
+
+```powershell
+docker compose -f docker/tp1/docker-compose.yml down
 ```
 
 Pour tout effacer (base partagée et volumes TP2) et repartir à zéro :

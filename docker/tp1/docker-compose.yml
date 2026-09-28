@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: audit-cartographie-postgres
+    container_name: Velib-Bordeaux
     restart: unless-stopped
     environment:
       POSTGRES_DB: transport_velo
@@ -18,7 +18,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - velib-bordeaux
 
 volumes:
   postgres_data_tp1:
     name: tp1_postgres_data_tp1
+
+networks:
+  velib-bordeaux:
+    name: velib-bordeaux-network

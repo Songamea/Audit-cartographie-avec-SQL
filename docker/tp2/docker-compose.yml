@@ -20,25 +20,6 @@ services:
     volumes:
       - kafka_data_tp2:/tmp/kraft-combined-logs
 
-  postgres:
-    image: postgres:16-alpine
-    container_name: audit-cartographie-postgres-tp2
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: transport_velo
-      POSTGRES_USER: audit_user
-      POSTGRES_PASSWORD: audit_password
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data_tp2:/var/lib/postgresql/data
-      - ../../database/sql/tp2_schema.sql:/docker-entrypoint-initdb.d/02_tp2_schema.sql:ro
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U audit_user -d transport_velo" ]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   source2:
     build:
       context: ../../pipeline
@@ -85,8 +66,6 @@ services:
       context: ../../spark
     command: /opt/spark/bin/spark-submit /opt/spark/jobs/spark_job.py
     depends_on:
-      postgres:
-        condition: service_healthy
       aggregator:
         condition: service_started
     environment:
@@ -104,9 +83,6 @@ services:
     build:
       context: ../../pipeline
     command: python metrics.py
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: transport_velo
@@ -120,9 +96,6 @@ services:
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       DATA_SOURCE_NAME: postgresql://audit_user:audit_password@postgres:5432/transport_velo?sslmode=disable
     ports:
@@ -160,9 +133,6 @@ services:
 
   metabase:
     image: metabase/metabase:v0.50.26
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       MB_DB_FILE: /metabase-data/metabase.db
     volumes:
@@ -172,10 +142,12 @@ services:
 
 volumes:
   kafka_data_tp2:
-  postgres_data_tp2:
-    external: true
-    name: tp1_postgres_data_tp1
   datalake_data_tp2:
   prometheus_data_tp2:
   grafana_data_tp2:
   metabase_data_tp2:
+
+networks:
+  default:
+    name: velib-bordeaux-network
+    external: true

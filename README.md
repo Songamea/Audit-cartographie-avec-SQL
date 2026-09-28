@@ -6,10 +6,10 @@ Projet sur les données de mobilité cyclable de Bordeaux Métropole.
 - **TP2** : pipeline météo avec Kafka, Data Lake, Spark, PostgreSQL,
   Metabase, Prometheus et Grafana.
 
-Les deux TPs ont deux fichiers Compose séparés, mais partagent **la même base
-PostgreSQL persistante**. Le TP2 complète la base créée par le TP1. Il faut
-arrêter le conteneur TP1 avant le TP2, mais l'arrêt normal ne supprime pas le
-volume qui contient les données.
+Les deux TPs ont deux fichiers Compose séparés. Le TP1 crée le conteneur
+PostgreSQL **`Velib-Bordeaux`** ; le TP2 le laisse actif et utilise directement
+sa base via un réseau Docker commun. Il n'y a donc ni deuxième serveur
+PostgreSQL ni arrêt du TP1 entre les deux étapes.
 
 ## Prérequis
 
@@ -40,35 +40,30 @@ docker compose -f docker/tp1/docker-compose.yml exec postgres `
   -c "SELECT COUNT(*) AS sensors FROM sensor;"
 ```
 
-Le résultat attendu est un nombre de capteurs supérieur à zéro. Quand cette
-vérification est correcte, arrêter le conteneur TP1 :
+Le résultat attendu est un nombre de capteurs supérieur à zéro. Garde le
+conteneur **`Velib-Bordeaux` démarré** : le script TP2 en a besoin.
 
-```powershell
-docker compose -f docker/tp1/docker-compose.yml down
-```
-
-`down` supprime le conteneur et le réseau du TP1, **pas le volume
-`tp1_postgres_data_tp1`**. Les tables et les données restent stockées.
-Dans Docker Desktop, le conteneur n'apparaît plus dans **Containers** après
-l'arrêt ; la base persistante se vérifie dans **Volumes** ou avec :
+Dans Docker Desktop, ce serveur PostgreSQL apparaît dans **Containers** sous
+le nom `Velib-Bordeaux`. Le stockage persistant peut aussi se vérifier dans
+**Volumes** ou avec :
 
 ```powershell
 docker volume ls
 docker volume inspect tp1_postgres_data_tp1
 ```
 
-### 2. Lancer le TP2
+### 2. Lancer le TP2 sans arrêter PostgreSQL
 
-Après l'arrêt du TP1 :
+Dans un autre terminal, ou après le retour du script TP1 :
 
 ```powershell
 python .\scripts\setup_tp2.py
 ```
 
-Le script vérifie que le TP1 est arrêté et que sa base contient les capteurs.
-Il rattache le PostgreSQL TP2 au volume conservé, ajoute la table
-`weather_sensor_clean` à cette même base, puis construit et démarre les autres
-services. Il ne recharge ni ne remplace le modèle et les données du TP1.
+Le script vérifie que `Velib-Bordeaux` est actif et que la base contient les
+capteurs. Il ajoute la table `weather_sensor_clean` au PostgreSQL du TP1, puis
+démarre les autres services sur le même réseau Docker. Il ne redémarre ni ne
+recrée PostgreSQL.
 
 Vérifier les conteneurs :
 
@@ -91,7 +86,7 @@ produits automatiquement toutes les 30 secondes.
 Connexion PostgreSQL :
 
 ```powershell
-docker compose -f docker/tp2/docker-compose.yml exec postgres `
+docker compose -f docker/tp1/docker-compose.yml exec postgres `
   psql -U audit_user -d transport_velo
 ```
 
@@ -102,29 +97,34 @@ Pour Metabase, utiliser l'hôte Docker `postgres`, le port `5432`, la base
 Contrôler les résultats TP2 :
 
 ```powershell
-docker compose -f docker/tp2/docker-compose.yml exec postgres `
+docker compose -f docker/tp1/docker-compose.yml exec postgres `
   psql -U audit_user -d transport_velo `
   -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
 ```
 
 ## Arrêt et réinitialisation
 
-Arrêter la plateforme TP2 sans supprimer la base partagée :
+Arrêter les services TP2 en laissant PostgreSQL démarré :
 
 ```powershell
 docker compose -f docker/tp2/docker-compose.yml down
 ```
 
-Pour réinitialiser les TPs et **effacer définitivement** la base partagée et
-les données Docker du TP2 :
+Quand tu veux aussi arrêter PostgreSQL, sans effacer sa base :
+
+```powershell
+docker compose -f docker/tp1/docker-compose.yml down
+```
+
+Pour réinitialiser les TPs et **effacer définitivement** la base et les
+données Docker :
 
 ```powershell
 python .\scripts\reset_project.py
 ```
 
-Puis reprendre le parcours depuis l'étape 1. Ne pas confondre cette commande
-avec `docker compose down` : le script de reset utilise `down -v` et supprime
-les volumes.
+Puis reprendre le parcours depuis l'étape 1. Le script de reset utilise
+`down -v` et supprime les volumes ; ce n'est pas un simple arrêt.
 
 ## Ce que fait chaque TP
 

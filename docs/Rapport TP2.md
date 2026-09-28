@@ -37,8 +37,9 @@ flowchart LR
 
 Services Docker : Kafka en mode KRaft, producer, source2, aggregator,
 Spark/PySpark, PostgreSQL, Metabase, Prometheus, Grafana et postgres-exporter.
-Des volumes nommés assurent la persistance, dont le volume PostgreSQL du TP1
-réutilisé par le TP2.
+Des volumes nommés assurent la persistance des services TP2. PostgreSQL reste
+dans le conteneur `Velib-Bordeaux` démarré pour le TP1 ; le TP2 s'y connecte
+via le réseau Docker partagé.
 
 ## Pipeline
 
@@ -52,12 +53,11 @@ réutilisé par le TP2.
 
 Prerequis : Docker Desktop demarre et Docker Compose v2.
 
-Le TP2 reprend la base persistante creee au TP1. Lancer d'abord le script TP1,
-verifier les donnees, puis arreter son conteneur sans supprimer son volume :
+Le TP2 réutilise le conteneur PostgreSQL `Velib-Bordeaux` créé au TP1.
+Lancer le TP1 et vérifier ses données :
 
 ```powershell
 python .\scripts\setup_tp1.py
-docker compose -f docker/tp1/docker-compose.yml down
 ```
 
 Puis lancer le script TP2 :
@@ -66,9 +66,9 @@ Puis lancer le script TP2 :
 python .\scripts\setup_tp2.py
 ```
 
-Le TP2 utilise le même volume PostgreSQL que le TP1 ; il complète la base en
-créant `weather_sensor_clean`. Ne pas lancer simultanément les deux Compose :
-ils partagent la base et publient PostgreSQL sur le port local `5433`.
+Laisser `Velib-Bordeaux` démarré. Le TP2 rejoint son réseau Docker et ajoute
+`weather_sensor_clean` à la base existante ; aucun deuxième PostgreSQL n'est
+lancé. Le port local `5433` reste publié par le conteneur du TP1.
 
 Le premier démarrage peut prendre quelques minutes pour construire les images.
 Les nouvelles données météo sont ensuite générées automatiquement toutes les
@@ -84,8 +84,8 @@ Les nouvelles données météo sont ensuite générées automatiquement toutes l
 Requetes de controle :
 
 ```powershell
-docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
-docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT event_id, observed_at, sensor_ident, temperature_c, comptage_5m FROM weather_sensor_clean ORDER BY observed_at DESC LIMIT 5;"
+docker compose -f docker/tp1/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
+docker compose -f docker/tp1/docker-compose.yml exec postgres psql -U audit_user -d transport_velo -c "SELECT event_id, observed_at, sensor_ident, temperature_c, comptage_5m FROM weather_sensor_clean ORDER BY observed_at DESC LIMIT 5;"
 ```
 
 L'indicateur Raw vs Clean est disponible dans Grafana via `datalake_raw_records` et `postgres_clean_records`. Les compteurs agreges sont exposes par `metrics.py` sur le port 9105 et collectes par Prometheus.

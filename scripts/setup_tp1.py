@@ -17,7 +17,7 @@ def main() -> None:
     if shutil.which("docker") is None:
         raise SystemExit("Docker est requis et doit etre demarre.")
     tp2_status = subprocess.run(
-        ["docker", "compose", "-f", str(TP2_COMPOSE), "ps", "-q", "postgres"],
+        ["docker", "compose", "-f", str(TP2_COMPOSE), "ps", "-q"],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -25,8 +25,8 @@ def main() -> None:
     )
     if tp2_status.stdout.strip():
         raise SystemExit(
-            "Le TP2 est encore actif et utilise la meme base. Arrete-le avant "
-            "de relancer le TP1 :\n"
+            "Des services du TP2 sont encore actifs et utilisent PostgreSQL. "
+            "Arrete-les avant de relancer le TP1 :\n"
             "docker compose -f docker/tp2/docker-compose.yml down"
         )
     subprocess.run(
@@ -71,8 +71,7 @@ def main() -> None:
             )
         time.sleep(2)
     print(f"\nCapteurs charges dans la base partagee : {sensor_count}")
-    print("\nTP1 termine et verifie. Arrete-le avant de lancer le TP2 :")
-    print("docker compose -f docker/tp1/docker-compose.yml down")
+    print("\nTP1 demarre et verifie. Laisse ce conteneur actif pour le TP2.")
     print("Puis lance : python .\\scripts\\setup_tp2.py")
 
 
