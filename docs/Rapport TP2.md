@@ -107,11 +107,3 @@ database/sql/postgresql_schema.sql schema relationnel du TP1 initialise par la p
 ## Limites connues
 
 Le CSV du TP1 est un inventaire de capteurs et non un historique de mesures. Le rattachement meteo/capteur est donc un enrichissement spatial de demonstration. Pour une analyse de correlation robuste, il faudrait ajouter l'API historique des comptages velo ou une source de mesures horodonnees.
-
-## Suite du projet : TP3
-
-Le TP3 audite la qualité de `weather_sensor_clean`, corrige les anomalies
-conformes aux règles documentées et exporte les résultats avant/après.
-Consulter [le rapport TP3](Rapport%20TP3.md), sa
-[cartographie qualité](Cartographie%20TP3.md) et les scripts
-`database/sql/tp3_audit.sql` et `database/sql/tp3_clean.sql`.

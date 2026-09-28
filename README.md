@@ -54,7 +54,7 @@ docker volume ls
 docker volume inspect tp1_postgres_data_tp1
 ```
 
-### 2. Lancer le TP2 sans arrêter PostgreSQL
+### 2. Lancer le TP2
 
 Dans un autre terminal, ou après le retour du script TP1 :
 
@@ -214,11 +214,6 @@ spatial de démonstration.
 | Données sources | [pc_captv_p.csv](data/pc_captv_p.csv) |
 | Lancement et vérification | [setup_tp1.py](scripts/setup_tp1.py), puis les commandes de vérification de l'étape 1 ci-dessus |
 
-**État TP1 :** les livrables demandés sont présents dans le dépôt : sujet et
-sources documentés, dictionnaire, modèles conceptuel et logique, script SQL
-d'implémentation et de test, et cartographie globale dans le rapport. Le
-lancement réel doit être vérifié sur la machine avec la procédure ci-dessus.
-
 ### Rendu TP2 — pipeline, exploitation et observabilité
 
 | Livrable | Fichier / emplacement |
@@ -232,25 +227,6 @@ lancement réel doit être vérifié sur la machine avec la procédure ci-dessus
 | Configuration Prometheus et dashboard Grafana | [prometheus.yml](monitoring/prometheus.yml), [dashboard Grafana](monitoring/grafana/dashboards/datasuite.json) |
 | Exemple de données propres | [échantillon CSV TP2](data/sample/weather_sensor_clean_sample.csv) |
 
-**État TP2 :** la collecte, Kafka, l'enrichissement, le Data Lake, le
-traitement PySpark, le chargement PostgreSQL, l'orchestration Docker, les
-métriques de pipeline et PostgreSQL, ainsi que le dashboard Grafana ont des
-fichiers de réalisation dans le dépôt. Cependant, tous les critères du sujet
-ne sont pas encore démontrés par des livrables prêts à l'emploi :
-
-- Metabase est lancé par Docker, mais aucun dashboard Metabase préconfiguré
-  n'est fourni ; il faut le créer dans l'interface après le premier démarrage.
-- Les métriques visibles configurées couvrent le pipeline et PostgreSQL ; la
-  supervision de l'état des conteneurs et des métriques CPU/mémoire n'est pas
-  fournie actuellement.
-- L'exécution de bout en bout et l'affichage des dashboards doivent encore
-  être validés après démarrage sur une machine disposant de Docker.
-
-En conséquence, le **TP1 est couvert par les livrables présents**, tandis que
-le **TP2 est implémenté en grande partie, mais il reste à finaliser et vérifier
-la partie Data Visualization/monitoring pour pouvoir affirmer que tous ses
-objectifs sont atteints**.
-
 ### Rendu TP3 — audit qualité et nettoyage
 
 | Livrable | Fichier / emplacement |
@@ -261,8 +237,3 @@ objectifs sont atteints**.
 | Script de nettoyage SQL transactionnel | [tp3_clean.sql](database/sql/tp3_clean.sql) |
 | Script qui exécute audit → nettoyage → audit et exporte les résultats | [setup_tp3.py](scripts/setup_tp3.py) |
 | Résultats mesurés avant/après | [reports/tp3/](reports/tp3) |
-
-**Résultat de l'exécution du 28 septembre 2026 :** 59 événements vérifiés,
-11 contrôles, zéro anomalie avant et après nettoyage ; les six actions de
-correction n'ont modifié aucune ligne. Les résultats détaillés et horodatés
-sont présentés dans le rapport TP3 et enregistrés dans `reports/tp3/`.

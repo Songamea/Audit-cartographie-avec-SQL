@@ -87,7 +87,7 @@ les fichiers précédents sont conservés.
 
 ## Résultats
 
-Exécution réelle sur la base du projet le **28 septembre 2026** :
+Exécution sur la base du projet :
 
 - **59 événements** contrôlés avant et après nettoyage ;
 - **11 contrôles** exécutés ;
@@ -105,14 +105,3 @@ bruts de cette exécution sont disponibles :
 Les nombres futurs dépendront des événements présents à l'exécution. Le script
 conserve chaque nouveau résultat avec son horodatage, sans écraser ces
 fichiers.
-
-## Synthèse pour la restitution orale
-
-> Nous avons audité la table finale produite par le pipeline TP2 selon cinq
-> dimensions : complétude, unicité, validité, cohérence et intégrité. Les
-> clés et contraintes SQL protègent déjà plusieurs invariants. Nous avons
-> conservé les événements, neutralisé uniquement les mesures hors domaine,
-> réaligné les métadonnées capteur sur la référence du TP1 et mesuré les
-> contrôles avant et après. Les CSV horodatés permettent de montrer les
-> anomalies observées et l'effet exact des corrections, sans inventer de
-> résultats.
