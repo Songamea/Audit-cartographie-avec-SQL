@@ -1,0 +1,38 @@
+TP3 — Audit qualité & nettoyage des données
+Objectif
+À partir des données produites dans le TP2, réaliser un audit de qualité, identifier les anomalies et nettoyer les données afin de les rendre conformes au schéma cible.
+
+Travail demandé
+Reprendre la cartographie et le schéma cible
+
+Vérifier les sources, tables, champs, types et relations.
+Définir une matrice de contrôles qualité
+
+Complétude, unicité, validité, cohérence et intégrité.
+Réaliser l’audit avec SQL
+
+Contrôler les valeurs manquantes, doublons, valeurs invalides et incohérences.
+Identifier les anomalies
+
+Classer les problèmes détectés et mesurer leur importance.
+Corriger les données
+
+Suppression, imputation, substitution ou correction selon le cas.
+Justifier chaque décision.
+Recontrôler les données
+
+Comparer les résultats avant et après nettoyage.
+Documenter les résultats
+
+Présenter les contrôles, anomalies, corrections et résultats obtenus.
+Livrable
+Un dossier intégré au projet TP1/TP2 contenant :
+
+cartographie mise à jour ;
+matrice de contrôles qualité ;
+scripts SQL d’audit et de nettoyage ;
+résultats avant/après ;
+documentation technique ;
+synthèse pour la restitution orale.
+Organisation indicative
+Cartographie → Audit SQL → Détection → Nettoyage → Contrôle final → Documentation → Restitution
