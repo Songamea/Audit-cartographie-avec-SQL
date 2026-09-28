@@ -46,9 +46,13 @@ docker volume inspect tp1_postgres_data_tp1
 ## TP2
 
 ```powershell
-docker compose -f docker/tp2/docker-compose.yml up -d --build
+python .\scripts\setup_tp2.py
 docker compose -f docker/tp2/docker-compose.yml ps
 ```
+
+Utiliser le script pour lancer TP2 : il vérifie les tables du TP1, crée le
+schéma TP2 dans le PostgreSQL déjà actif, puis démarre les services. Une
+commande `docker compose up` seule ne réalise pas cette préparation SQL.
 
 Le PostgreSQL du TP1 reste accessible sur `5433`. Le TP2 expose Grafana sur
 `3000`, Metabase sur `3001` et Prometheus sur `9090`. Pour accéder à la base

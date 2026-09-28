@@ -1,0 +1,7 @@
+action,corrected_rows
+Replace negative precipitation with 0,0
+Restore sensor metadata from canonical sensor row,0
+Set invalid humidity to NULL,0
+Set invalid temperature to NULL,0
+Set negative wind speed to NULL,0
+Trim source text,0

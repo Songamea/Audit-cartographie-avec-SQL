@@ -1,0 +1,12 @@
+category,control_name,checked_rows,issue_count,severity,policy
+Completeness,Optional weather fields missing (informational),64,0,INFO,"Weather fields are optional; absence is reported, not imputed."
+Completeness,Required fields missing or blank,64,0,HIGH,Required columns should be populated; metadata is repaired from sensor when possible.
+Uniqueness,Duplicate event_id,64,0,HIGH,event_id is the primary key; duplicates are also prevented by PostgreSQL.
+Validity,Coordinates outside latitude/longitude bounds,64,0,HIGH,Coordinates are replaced by the canonical sensor coordinates.
+Validity,Humidity outside 0..100 percent,64,0,MEDIUM,Out-of-range optional values are set to NULL; no value is invented.
+Validity,Negative bicycle count,64,0,MEDIUM,The target table CHECK constraint prevents negative counts.
+Validity,Negative precipitation,64,0,MEDIUM,Substituted with 0 because the target schema requires a nonnegative value.
+Validity,Negative wind speed,64,0,MEDIUM,Negative optional values are set to NULL; no value is invented.
+Validity,Temperature outside -90..60 C,64,0,MEDIUM,Out-of-range optional values are set to NULL; no value is invented.
+Consistency,Sensor metadata differs from canonical sensor row,64,0,HIGH,Denormalized metadata is replaced with values from sensor using sensor_gid.
+Integrity,Events referencing a missing sensor,64,0,CRITICAL,The foreign key should prevent orphan references.

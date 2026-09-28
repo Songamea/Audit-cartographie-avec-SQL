@@ -5,6 +5,8 @@ Projet sur les données de mobilité cyclable de Bordeaux Métropole.
 - **TP1** : audit du CSV, modélisation et chargement PostgreSQL.
 - **TP2** : pipeline météo avec Kafka, Data Lake, Spark, PostgreSQL,
   Metabase, Prometheus et Grafana.
+- **TP3** : audit qualité SQL et correction contrôlée des événements issus
+  du TP2.
 
 Les deux TPs ont deux fichiers Compose séparés. Le TP1 crée le conteneur
 PostgreSQL **`Velib-Bordeaux`** ; le TP2 le laisse actif et utilise directement
@@ -74,6 +76,27 @@ docker compose -f docker/tp2/docker-compose.yml ps
 Le démarrage peut prendre quelques minutes. Les événements météo sont ensuite
 produits automatiquement toutes les 30 secondes.
 
+### 3. Auditer et nettoyer les données du TP2 (TP3)
+
+Attends que le TP2 ait produit des événements, puis lance :
+
+```powershell
+python .\scripts\setup_tp3.py
+```
+
+Le script produit un audit avant nettoyage, applique les corrections
+documentées, puis refait les mêmes contrôles. Les CSV horodatés sont créés
+dans `reports/tp3/`. Compare `issue_count` dans les fichiers avant/après et
+consulte `cleaning_actions` pour le nombre de corrections appliquées. Les
+anomalies sont comptées par règle ; une même ligne peut apparaître dans
+plusieurs règles.
+
+Les scripts SQL sont disponibles séparément :
+[audit](database/sql/tp3_audit.sql) et
+[nettoyage](database/sql/tp3_clean.sql). Le [rapport TP3](<docs/Rapport%20TP3.md>)
+présente la matrice, les choix de correction et la synthèse de restitution.
+La cartographie dédiée est dans [docs/Cartographie TP3.md](<docs/Cartographie%20TP3.md>).
+
 ## Accès aux services TP2
 
 | Service | Adresse / paramètres |
@@ -142,25 +165,35 @@ capteur le plus proche. Spark nettoie, déduplique et charge
 `weather_sensor_clean` dans PostgreSQL. Prometheus et Grafana exposent le
 suivi du pipeline ; Metabase permet l'exploration SQL.
 
+### TP3
+
+Les contrôles et corrections ciblent `weather_sensor_clean`. Le rapport
+avant/après produit par le script est enregistré dans `reports/tp3/` et n'est
+pas prérempli dans Git : les résultats dépendent des événements présents au
+moment de l'audit.
+
 ## Arborescence
 
 ```text
 data/                 CSV source et échantillon TP2
 database/models/      modèle logique DBML
-database/sql/         scripts PostgreSQL TP1 et TP2
+database/sql/         scripts PostgreSQL TP1, TP2 et audit/nettoyage TP3
 docker/tp1/           Compose PostgreSQL du TP1
 docker/tp2/           Compose de la plateforme TP2
 pipeline/             producer, source2, agrégateur et métriques
 spark/                image et job PySpark
 monitoring/           Prometheus et Grafana
-scripts/              scripts setup et reset
-docs/                 rapports et documentation Docker
+scripts/              scripts setup, reset et audit TP3
+reports/tp3/          résultats avant/après générés par TP3
+docs/                 rapports, cartographies et documentation Docker
 ```
 
 ## Documentation
 
 - [Rapport TP1](<docs/Rapport%20TP1.md>)
 - [Rapport TP2](<docs/Rapport%20TP2.md>)
+- [Rapport TP3](<docs/Rapport%20TP3.md>)
+- [Cartographie TP3](<docs/Cartographie%20TP3.md>)
 - [Documentation Docker](docs/DOCKER.md)
 - [Échantillon TP2](data/sample/README.md)
 
@@ -217,3 +250,19 @@ En conséquence, le **TP1 est couvert par les livrables présents**, tandis que
 le **TP2 est implémenté en grande partie, mais il reste à finaliser et vérifier
 la partie Data Visualization/monitoring pour pouvoir affirmer que tous ses
 objectifs sont atteints**.
+
+### Rendu TP3 — audit qualité et nettoyage
+
+| Livrable | Fichier / emplacement |
+| --- | --- |
+| Matrice des contrôles, décisions et synthèse orale | [Rapport TP3](<docs/Rapport%20TP3.md>) |
+| Cartographie mise à jour | [Cartographie TP3](<docs/Cartographie%20TP3.md>) |
+| Script d'audit SQL | [tp3_audit.sql](database/sql/tp3_audit.sql) |
+| Script de nettoyage SQL transactionnel | [tp3_clean.sql](database/sql/tp3_clean.sql) |
+| Script qui exécute audit → nettoyage → audit et exporte les résultats | [setup_tp3.py](scripts/setup_tp3.py) |
+| Résultats mesurés avant/après | [reports/tp3/](reports/tp3) |
+
+**Résultat de l'exécution du 28 septembre 2026 :** 59 événements vérifiés,
+11 contrôles, zéro anomalie avant et après nettoyage ; les six actions de
+correction n'ont modifié aucune ligne. Les résultats détaillés et horodatés
+sont présentés dans le rapport TP3 et enregistrés dans `reports/tp3/`.
