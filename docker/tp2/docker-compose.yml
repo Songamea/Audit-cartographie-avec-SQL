@@ -32,9 +32,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data_tp2:/var/lib/postgresql/data
-      - ../../database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
       - ../../database/sql/tp2_schema.sql:/docker-entrypoint-initdb.d/02_tp2_schema.sql:ro
-      - ../../data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U audit_user -d transport_velo" ]
       interval: 5s
@@ -175,6 +173,8 @@ services:
 volumes:
   kafka_data_tp2:
   postgres_data_tp2:
+    external: true
+    name: tp1_postgres_data_tp1
   datalake_data_tp2:
   prometheus_data_tp2:
   grafana_data_tp2:

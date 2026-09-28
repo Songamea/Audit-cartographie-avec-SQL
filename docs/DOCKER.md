@@ -1,6 +1,7 @@
 # Docker — parcours TP1 puis TP2
 
-Le projet utilise deux fichiers Compose :
+Le projet utilise deux fichiers Compose séparés qui partagent le même volume
+PostgreSQL, nommé `tp1_postgres_data_tp1` :
 
 - `docker/tp1/docker-compose.yml` : PostgreSQL et le modèle relationnel du TP1 ;
 - `docker/tp2/docker-compose.yml` : plateforme complète du TP2.
@@ -12,6 +13,9 @@ python .\scripts\setup_tp1.py
 docker compose -f docker/tp1/docker-compose.yml down
 python .\scripts\setup_tp2.py
 ```
+
+La commande `down` retire le conteneur TP1, mais conserve le volume nommé.
+Le TP2 rattache ce même volume et ajoute son schéma à la base existante.
 
 ## TP1
 
@@ -48,14 +52,16 @@ docker compose -f docker/tp2/docker-compose.yml ps
 Le TP2 expose PostgreSQL sur `5433`, Grafana sur `3000`, Metabase sur `3001`
 et Prometheus sur `9090`.
 
-## Réinitialiser
+## Arrêter ou réinitialiser
 
-Les scripts d'initialisation PostgreSQL ne sont exécutés que lorsque le volume
-est vide. Pour rejouer un TP :
+`down` conserve les données. Pour arrêter TP2 :
 
 ```powershell
-python .\scripts\reset_project.py tp1
-python .\scripts\reset_project.py tp2
+docker compose -f docker/tp2/docker-compose.yml down
 ```
 
-Ces commandes suppriment uniquement les volumes du Compose choisi.
+Pour tout effacer (base partagée et volumes TP2) et repartir à zéro :
+
+```powershell
+python .\scripts\reset_project.py
+```

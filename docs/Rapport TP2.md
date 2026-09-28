@@ -35,7 +35,10 @@ flowchart LR
     PG --> PGX
 ```
 
-Services Docker : Kafka, Zookeeper, producer, source2, aggregator, Spark/PySpark, PostgreSQL, Metabase, Prometheus, Grafana et postgres-exporter. Les volumes nommes `kafka_data`, `postgres_data`, `datalake_data`, `prometheus_data`, `grafana_data`, `metabase_data` et `zookeeper_data` assurent la persistance.
+Services Docker : Kafka en mode KRaft, producer, source2, aggregator,
+Spark/PySpark, PostgreSQL, Metabase, Prometheus, Grafana et postgres-exporter.
+Des volumes nommés assurent la persistance, dont le volume PostgreSQL du TP1
+réutilisé par le TP2.
 
 ## Pipeline
 
@@ -49,18 +52,27 @@ Services Docker : Kafka, Zookeeper, producer, source2, aggregator, Spark/PySpark
 
 Prerequis : Docker Desktop demarre et Docker Compose v2.
 
+Le TP2 reprend la base persistante creee au TP1. Lancer d'abord le script TP1,
+verifier les donnees, puis arreter son conteneur sans supprimer son volume :
+
 ```powershell
-docker compose -f docker/tp2/docker-compose.yml up -d --build
-docker compose -f docker/tp2/docker-compose.yml ps
+python .\scripts\setup_tp1.py
+docker compose -f docker/tp1/docker-compose.yml down
 ```
 
-Le script historique est aussi disponible :
+Puis lancer le script TP2 :
 
 ```powershell
 python .\scripts\setup_tp2.py
 ```
 
-Le premier demarrage peut prendre quelques minutes pour construire les images et initialiser PostgreSQL. Les donnees sont generees ensuite automatiquement toutes les 30 secondes.
+Le TP2 utilise le même volume PostgreSQL que le TP1 ; il complète la base en
+créant `weather_sensor_clean`. Ne pas lancer simultanément les deux Compose :
+ils partagent la base et publient PostgreSQL sur le port local `5433`.
+
+Le premier démarrage peut prendre quelques minutes pour construire les images.
+Les nouvelles données météo sont ensuite générées automatiquement toutes les
+30 secondes.
 
 ## Exploitation
 

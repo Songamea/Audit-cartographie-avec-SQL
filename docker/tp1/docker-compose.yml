@@ -21,3 +21,4 @@ services:
 
 volumes:
   postgres_data_tp1:
+    name: tp1_postgres_data_tp1
