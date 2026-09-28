@@ -26,6 +26,27 @@ def load_to_postgres(rows: list[dict]) -> None:
         password=os.getenv("POSTGRES_PASSWORD", "audit_password"),
     ) as connection, connection.cursor() as cursor:
         for row in rows:
+            values = tuple(
+                row.get(field)
+                for field in (
+                    "event_id",
+                    "observed_at",
+                    "collected_at",
+                    "source",
+                    "temperature_c",
+                    "humidity_pct",
+                    "wind_speed_kmh",
+                    "precipitation_mm",
+                    "sensor_gid",
+                    "sensor_ident",
+                    "sensor_type",
+                    "zone",
+                    "sensor_latitude",
+                    "sensor_longitude",
+                    "sensor_label",
+                    "comptage_5m",
+                )
+            )
             cursor.execute(
                 """
                 INSERT INTO weather_sensor_clean (
@@ -33,30 +54,15 @@ def load_to_postgres(rows: list[dict]) -> None:
                     humidity_pct, wind_speed_kmh, precipitation_mm, sensor_gid,
                     sensor_ident, sensor_type, zone, sensor_latitude,
                     sensor_longitude, sensor_label, comptage_5m
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (event_id) DO NOTHING
+                )
+                SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM tp3_quality_exclusion
+                    WHERE event_id = %s
+                )
+                ON CONFLICT DO NOTHING
                 """,
-                tuple(
-                    row.get(field)
-                    for field in (
-                        "event_id",
-                        "observed_at",
-                        "collected_at",
-                        "source",
-                        "temperature_c",
-                        "humidity_pct",
-                        "wind_speed_kmh",
-                        "precipitation_mm",
-                        "sensor_gid",
-                        "sensor_ident",
-                        "sensor_type",
-                        "zone",
-                        "sensor_latitude",
-                        "sensor_longitude",
-                        "sensor_label",
-                        "comptage_5m",
-                    )
-                ),
+                values + (row.get("event_id"),),
             )
     LOADS.inc()
 

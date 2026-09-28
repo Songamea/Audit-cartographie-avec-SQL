@@ -39,7 +39,7 @@ Services Docker : Kafka, Zookeeper, producer, source2, aggregator, Spark/PySpark
 
 ## Pipeline
 
-1. `producer.py` interroge Open-Meteo, ajoute un `event_id` UUID et publie l'evenement dans Kafka.
+1. `producer.py` interroge Open-Meteo, convertit l'heure locale Europe/Paris en UTC, ajoute un `event_id` UUID et publie l'evenement dans Kafka.
 2. `source2.py` copie periodiquement le CSV vers `data-lake/raw/source2`.
 3. `aggregator.py` consomme Kafka, conserve l'evenement brut dans `raw/api` et produit `aggregated/weather_sensors.jsonl` apres rattachement au capteur le plus proche.
 4. `spark_job.py` lit l'agrege, controle les types, supprime les doublons par `event_id`, remplace les precipitations absentes par zero, supprime les lignes sans identifiant obligatoire et ecrit Parquet dans `clean`.
@@ -79,6 +79,8 @@ docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user
 L'indicateur Raw vs Clean est disponible dans Grafana via `datalake_raw_records` et `postgres_clean_records`. Les compteurs agreges sont exposes par `metrics.py` sur le port 9105 et collectes par Prometheus.
 
 Un échantillon de 10 événements propres est versionné dans [data/sample/weather_sensor_clean_sample.csv](../data/sample/weather_sensor_clean_sample.csv). Il permet de partager un résultat concret sans publier les volumes Docker locaux.
+
+Le contrôle qualité, les scripts d'audit/nettoyage et la cartographie enrichie sont présentés dans [le dossier TP3](TP3.md).
 
 ## Arborescence TP2
 

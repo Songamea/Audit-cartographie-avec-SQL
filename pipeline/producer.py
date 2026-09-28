@@ -3,6 +3,7 @@ import os
 import time
 import uuid
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 import requests
 from kafka import KafkaProducer
@@ -14,6 +15,13 @@ INTERVAL = int(os.getenv("POLL_INTERVAL_SECONDS", "30"))
 API_URL = "https://api.open-meteo.com/v1/forecast"
 EVENTS = Counter("api_events_total", "Weather events published to Kafka")
 ERRORS = Counter("api_errors_total", "Weather API errors")
+
+
+def normalize_observed_at(value: str) -> str:
+    observed_at = datetime.fromisoformat(value)
+    if observed_at.tzinfo is None:
+        observed_at = observed_at.replace(tzinfo=ZoneInfo("Europe/Paris"))
+    return observed_at.astimezone(timezone.utc).isoformat()
 
 
 def fetch_weather() -> dict:
@@ -36,7 +44,7 @@ def fetch_weather() -> dict:
         "source": "open-meteo",
         "latitude": 44.8378,
         "longitude": -0.5792,
-        "observed_at": current["time"],
+        "observed_at": normalize_observed_at(current["time"]),
         "temperature_c": current.get("temperature_2m"),
         "humidity_pct": current.get("relative_humidity_2m"),
         "wind_speed_kmh": current.get("wind_speed_10m"),

@@ -145,6 +145,7 @@ docs/                 rapports et documentation Docker
 
 - [Rapport TP1](<docs/Rapport%20TP1.md>)
 - [Rapport TP2](<docs/Rapport%20TP2.md>)
+- [Dossier TP3 - audit qualité](docs/TP3.md)
 - [Documentation Docker](docs/DOCKER.md)
 - [Échantillon TP2](data/sample/README.md)
 

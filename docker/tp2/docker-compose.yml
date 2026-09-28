@@ -34,6 +34,11 @@ services:
       - postgres_data_tp2:/var/lib/postgresql/data
       - ../../database/sql/postgresql_schema.sql:/docker-entrypoint-initdb.d/01_postgresql_schema.sql:ro
       - ../../database/sql/tp2_schema.sql:/docker-entrypoint-initdb.d/02_tp2_schema.sql:ro
+      - ../../database/sql/tp3_quality_schema.sql:/docker-entrypoint-initdb.d/03_tp3_quality_schema.sql:ro
+      - ../../database/sql/tp3_quality_schema.sql:/tp3/tp3_quality_schema.sql:ro
+      - ../../database/sql/audit_quality.sql:/tp3/audit_quality.sql:ro
+      - ../../database/sql/clean_quality.sql:/tp3/clean_quality.sql:ro
+      - ../../database/sql/report_quality.sql:/tp3/report_quality.sql:ro
       - ../../data/pc_captv_p.csv:/docker-entrypoint-initdb.d/pc_captv_p.csv:ro
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U audit_user -d transport_velo" ]

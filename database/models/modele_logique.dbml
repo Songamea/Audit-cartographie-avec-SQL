@@ -39,6 +39,32 @@ Table sensor_measurement {
   observed_at timestamptz [not null]
 }
 
+Table weather_sensor_clean {
+  event_id uuid [pk]
+  observed_at timestamptz [not null]
+  collected_at timestamptz [not null]
+  source varchar(80) [not null]
+  temperature_c numeric(6,2)
+  humidity_pct numeric(6,2)
+  wind_speed_kmh numeric(8,2)
+  precipitation_mm numeric(8,2) [not null, default: 0]
+  sensor_gid integer [not null]
+  sensor_ident varchar(30) [not null]
+  sensor_type varchar(30) [not null]
+  zone integer [not null]
+  sensor_latitude numeric(10,7) [not null]
+  sensor_longitude numeric(10,7) [not null]
+  sensor_label text [not null]
+  comptage_5m integer
+  processed_at timestamptz [not null]
+
+  indexes {
+    observed_at
+    zone
+  }
+}
+
 Ref: sensor.type_code > sensor_type.code
 Ref: sensor.zone_code > traffic_zone.zone_code
 Ref: sensor_measurement.sensor_gid - sensor.gid
+Ref: weather_sensor_clean.sensor_gid > sensor.gid
