@@ -1,3 +1,5 @@
+**Auteurs** : Mathias BERNARDIN, Leonardo ANTUNES BATARDA
+
 # TP3 — Audit qualité et nettoyage des données
 
 ## Objectif et périmètre
