@@ -1,3 +1,5 @@
+**Auteurs** : Mathias BERNARDIN, Leonardo ANTUNES BATARDA
+
 # TP2 - Pipeline temps reel et plateforme DataSuite
 
 ## Sujet et choix des sources
@@ -55,7 +57,7 @@ docker compose -f docker/tp2/docker-compose.yml ps
 Le script historique est aussi disponible :
 
 ```powershell
-python .\scripts\setup_project.py
+python .\scripts\setup_tp2.py
 ```
 
 Le premier demarrage peut prendre quelques minutes pour construire les images et initialiser PostgreSQL. Les donnees sont generees ensuite automatiquement toutes les 30 secondes.
@@ -87,7 +89,7 @@ data-lake/                point de montage du Data Lake
 monitoring/               configuration Prometheus et dashboard Grafana
 database/sql/tp2_schema.sql table PostgreSQL propre
 docker/tp2/docker-compose.yml orchestration TP2
-docker/tp1/docker-compose.yml orchestration TP1
+database/sql/postgresql_schema.sql schema relationnel du TP1 initialise par la plateforme
 ```
 
 ## Limites connues

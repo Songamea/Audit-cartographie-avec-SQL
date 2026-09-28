@@ -1,0 +1,274 @@
+TP2 — Pipeline Data temps réel & plateforme Data
+Suite du TP1 : Audit, cartographie et architecture des données
+1. Contexte et objectif
+Dans le TP1, vous avez étudié les sources, la cartographie et la modélisation des données.
+
+Dans ce TP2, vous devez transformer cette architecture en une plateforme Data automatisée et observable.
+
+À partir d'un sujet métier choisi, vous devez construire un pipeline permettant de :
+
+collecter des données depuis deux sources ;
+intégrer une API interrogée en continu via Kafka ;
+agréger les données des deux sources ;
+stocker les données brutes dans un Data Lake ;
+traiter les données avec PySpark ;
+charger les données propres dans PostgreSQL ;
+exposer les données dans un outil de Data Visualization ;
+superviser la plateforme avec Prometheus et Grafana ;
+orchestrer les services avec Docker Compose.
+L'objectif final est d'obtenir une chaîne reproductible :
+
+API ──► Kafka ──┐
+                ├──► Agrégation ──► Data Lake ──► PySpark ──► PostgreSQL ──► Data Viz
+Source 2 ───────┘
+
+                         Monitoring
+                 Prometheus ──► Grafana
+2. Choix du sujet et des sources
+Conservez de préférence le sujet du TP1 afin d'assurer la continuité du projet.
+
+Vous devez sélectionner :
+
+Source 1 — API
+Une API permettant une collecte répétée ou continue.
+
+Exemples : transport, météo, finance, sport, énergie, open data…
+
+API
+ ↓
+Producer
+ ↓
+Kafka
+ ↓
+Topic
+Source 2 — autre source
+Choisissez une source complémentaire :
+
+scraper ;
+CSV / JSON / Excel ;
+base de données ;
+open data ;
+autre source pertinente.
+Les deux sources doivent présenter un lien métier exploitable : enrichissement, jointure, rapprochement ou consolidation.
+
+3. Architecture à réaliser
+Produisez d'abord le schéma de votre architecture.
+
+Il doit faire apparaître au minimum :
+
+              ┌──────────┐
+              │   API    │
+              └────┬─────┘
+                   ↓
+                Kafka
+                   │
+                   │
+Source 2 ──────────┤
+                   ↓
+              Agrégation
+                   ↓
+               Data Lake
+                   ↓
+                PySpark
+                   ↓
+              PostgreSQL
+                   ↓
+                Data Viz
+
+        Prometheus ──► Grafana
+             │
+             └── Monitoring
+Le schéma doit également préciser les principaux services Docker et les volumes nécessaires à la persistance.
+
+4. Pipeline de données
+Étape A — Collecte
+Mettre en place les deux mécanismes de collecte.
+
+Pour l'API :
+
+développer le producer ;
+envoyer les événements dans Kafka ;
+vérifier la réception des messages.
+Pour la seconde source :
+
+mettre en place le mécanisme de récupération ;
+documenter son format et son rôle dans le projet.
+Étape B — Agrégation
+Construire une logique permettant de réunir les deux sources.
+
+La logique doit être justifiée par le besoin métier.
+
+API → Kafka ─────┐
+                ├──► Agrégation
+Source 2 ───────┘
+Étape C — Data Lake
+Choisir une solution de Data Lake adaptée au projet.
+
+Les données brutes doivent être conservées et organisées de manière identifiable.
+
+Exemple :
+
+data-lake/
+├── raw/
+│   ├── api/
+│   └── source2/
+└── aggregated/
+Étape D — Traitement PySpark
+PySpark doit lire les données du Data Lake et produire une version exploitable.
+
+Le traitement doit inclure, selon les besoins du sujet :
+
+contrôle des types ;
+gestion des valeurs manquantes ;
+gestion des doublons ;
+normalisation ;
+transformation ;
+enrichissement ou agrégation.
+Étape E — PostgreSQL
+Les données propres sont chargées dans PostgreSQL.
+
+La structure doit être cohérente avec la modélisation réalisée précédemment.
+
+Étape F — Data Visualization
+Connecter PostgreSQL à un outil de Data Visualization.
+
+Le dashboard doit permettre d'exploiter les données produites par le pipeline et présenter des indicateurs pertinents pour le sujet.
+
+5. Observabilité — Prometheus & Grafana
+La plateforme doit être observable.
+
+Mettre en place :
+
+Prometheus + Grafana
+
+Le dashboard doit permettre de suivre au minimum :
+
+Infrastructure
+état des conteneurs ;
+disponibilité des services ;
+CPU / mémoire lorsque les métriques sont disponibles.
+PostgreSQL
+disponibilité ;
+activité ;
+métriques pertinentes de la base.
+Pipeline Data
+Suivre la quantité de données :
+
+Données brutes dans le Data Lake
+              ↓
+        Traitement PySpark
+              ↓
+Données propres dans PostgreSQL
+L'objectif est de pouvoir vérifier que les données collectées sont effectivement traitées et chargées.
+
+Un indicateur de comparaison Raw vs Clean devra être proposé.
+
+6. Dockerisation et automatisation
+L'ensemble du projet doit être exécutable avec Docker.
+
+Le docker-compose.yml doit orchestrer les principaux composants :
+
+Kafka
+Producer API
+Source 2
+Data Lake
+Spark / PySpark
+PostgreSQL
+Data Viz
+Prometheus
+Grafana
+Le projet doit viser un démarrage reproductible :
+
+docker compose up -d
+Après démarrage, vous devez vérifier que le pipeline peut fonctionner sans intervention manuelle inutile :
+
+Collecte
+   ↓
+Kafka
+   ↓
+Agrégation
+   ↓
+Data Lake
+   ↓
+PySpark
+   ↓
+PostgreSQL
+   ↓
+Data Viz
+7. Livrable final
+Un seul dépôt Git doit contenir l'ensemble du projet.
+
+1. Architecture & documentation
+schéma d'architecture ;
+description des choix techniques ;
+description des deux sources ;
+README de déploiement et d'utilisation.
+2. Pipeline Data
+collecte API + Kafka ;
+collecte source 2 ;
+agrégation ;
+stockage Data Lake ;
+traitement PySpark ;
+chargement PostgreSQL.
+3. Exploitation & observabilité
+dashboard Data Visualization ;
+dashboard Grafana ;
+métriques infrastructure ;
+métriques PostgreSQL ;
+indicateur Raw vs Clean.
+4. Déploiement
+docker-compose.yml ;
+Dockerfiles / configurations nécessaires ;
+volumes et configuration des services.
+8. Arborescence recommandée
+TP2/
+├── docker-compose.yml
+├── README.md
+│
+├── api/
+├── source2/
+├── kafka/
+├── spark/
+├── datalake/
+├── postgres/
+├── dataviz/
+├── monitoring/
+└── docs/
+    └── architecture.png
+9. Critères de réussite
+Le projet est considéré comme fonctionnel si :
+
+deux sources complémentaires sont intégrées ;
+l'API alimente Kafka ;
+les deux sources sont agrégées ;
+les données brutes sont conservées dans le Data Lake ;
+PySpark produit les données propres ;
+PostgreSQL est alimenté automatiquement ;
+le dashboard Data Viz exploite PostgreSQL ;
+Prometheus collecte les métriques ;
+Grafana permet le monitoring ;
+le volume Raw vs Clean est observable ;
+l'ensemble des services est orchestré avec Docker Compose ;
+le projet est documenté et reproductible.
+Démonstration finale
+La démonstration doit permettre de suivre une donnée depuis sa collecte jusqu'à sa visualisation, puis de vérifier son traitement grâce au monitoring :
+
+COLLECTER
+   ↓
+TRANSPORTER
+   ↓
+STOCKER
+   ↓
+TRANSFORMER
+   ↓
+CHARGER
+   ↓
+VISUALISER
+   ↓
+SUPERVISER
+Résultat attendu
+Une architecture Data de niveau professionnel, automatisée, conteneurisée et observable, permettant de démontrer la maîtrise de la chaîne :
+
+API → Kafka → Data Lake → PySpark → PostgreSQL → Data Viz + Prometheus/Grafana.
+
+

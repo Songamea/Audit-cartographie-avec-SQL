@@ -1,131 +1,153 @@
-# Guide de démarrage du projet
+# Audit et cartographie des données — TP1 et TP2
 
-Le TP2 ajoute une plateforme DataSuite complète au modèle du TP1 : API Open-Meteo, Kafka, Data Lake, PySpark, PostgreSQL, Metabase, Prometheus et Grafana. Le rapport détaillé est dans [docs/TP2.md](docs/TP2.md).
+Projet sur les données de mobilité cyclable de Bordeaux Métropole.
 
-Ce document est le README d’instruction pour l’utilisateur.
+- **TP1** : audit du CSV, modélisation et chargement PostgreSQL.
+- **TP2** : pipeline météo avec Kafka, Data Lake, Spark, PostgreSQL,
+  Metabase, Prometheus et Grafana.
 
-Il ne contient pas le rapport TP1. Le rapport détaillé est dans [docs/Rapport TP1.md](docs/Rapport%20TP1.md).
+Les deux TPs ont deux fichiers Compose séparés. Le TP2 doit être lancé après
+la vérification du TP1. Comme les deux utilisent le port `5433`, le Compose
+TP1 doit être arrêté avant de lancer le TP2.
 
----
+## Prérequis
 
-## 1. Arborescence du projet
+- Docker Desktop démarré ;
+- Docker Compose v2 ;
+- Python 3.10 ou plus récent pour les scripts.
+
+Les dépendances Python du pipeline sont installées dans les images Docker.
+
+## Lancement guidé
+
+### 1. Lancer et vérifier le TP1
+
+Depuis la racine du dépôt :
+
+```powershell
+python .\scripts\setup_tp1.py
+```
+
+Le script démarre PostgreSQL, charge `data/pc_captv_p.csv` et affiche le
+nombre de capteurs. Vérifier aussi l'état du service et les données :
+
+```powershell
+docker compose -f docker/tp1/docker-compose.yml ps
+docker compose -f docker/tp1/docker-compose.yml exec postgres `
+  psql -U audit_user -d transport_velo `
+  -c "SELECT COUNT(*) AS sensors FROM sensor;"
+```
+
+Le résultat attendu est un nombre de capteurs supérieur à zéro. Quand cette
+vérification est correcte, arrêter le Compose TP1 sans supprimer son volume :
+
+```powershell
+docker compose -f docker/tp1/docker-compose.yml down
+```
+
+### 2. Lancer le TP2
+
+Après l'arrêt du TP1 :
+
+```powershell
+python .\scripts\setup_tp2.py
+```
+
+Le script vérifie que le TP1 est arrêté, puis construit et démarre toute la
+plateforme TP2.
+
+Vérifier les conteneurs :
+
+```powershell
+docker compose -f docker/tp2/docker-compose.yml ps
+```
+
+Le démarrage peut prendre quelques minutes. Les événements météo sont ensuite
+produits automatiquement toutes les 30 secondes.
+
+## Accès aux services TP2
+
+| Service | Adresse / paramètres |
+| --- | --- |
+| PostgreSQL | `localhost:5433` |
+| Grafana | <http://localhost:3000>, `admin` / `admin` |
+| Metabase | <http://localhost:3001> |
+| Prometheus | <http://localhost:9090> |
+
+Connexion PostgreSQL :
+
+```powershell
+docker compose -f docker/tp2/docker-compose.yml exec postgres `
+  psql -U audit_user -d transport_velo
+```
+
+Pour Metabase, utiliser l'hôte Docker `postgres`, le port `5432`, la base
+`transport_velo`, l'utilisateur `audit_user` et le mot de passe
+`audit_password`.
+
+Contrôler les résultats TP2 :
+
+```powershell
+docker compose -f docker/tp2/docker-compose.yml exec postgres `
+  psql -U audit_user -d transport_velo `
+  -c "SELECT COUNT(*) AS clean_records FROM weather_sensor_clean;"
+```
+
+## Arrêt et réinitialisation
+
+Arrêt sans supprimer les données :
+
+```powershell
+docker compose -f docker/tp2/docker-compose.yml down
+```
+
+Pour rejouer l'initialisation complète d'un TP :
+
+```powershell
+python .\scripts\reset_project.py tp1
+python .\scripts\reset_project.py tp2
+```
+
+Puis reprendre le parcours depuis l'étape 1.
+
+## Ce que fait chaque TP
+
+### TP1
+
+Le script SQL charge le CSV en staging, crée `sensor_type`,
+`traffic_zone`, `sensor` et `sensor_measurement`, ajoute les clés, contraintes
+et index, puis insère deux mesures de test.
+
+### TP2
+
+`producer.py` interroge Open-Meteo et publie dans Kafka. `source2.py` copie
+l'inventaire CSV dans le Data Lake. `aggregator.py` rapproche la météo du
+capteur le plus proche. Spark nettoie, déduplique et charge
+`weather_sensor_clean` dans PostgreSQL. Prometheus et Grafana exposent le
+suivi du pipeline ; Metabase permet l'exploration SQL.
+
+## Arborescence
 
 ```text
-Audit-cartographie-avec-SQL/
-├── README.md
-├── docs/
-│   ├── DOCKER.md
-│   ├── Rapport TP1.md
-│   └── Support_Audit_Cartographie_Donnees.pdf
-├── data/
-│   ├── pc_captv_p.csv
-│   └── diagrame.png
-├── database/
-│   ├── models/
-│   │   └── modele_logique.dbml
-│   └── sql/
-│       └── postgresql_schema.sql
-├── docker/
-│   ├── tp1/docker-compose.yml
-│   └── tp2/docker-compose.yml
-├── scripts/
-│   ├── setup_project.py
-│   └── reset_db.ps1
-└── .git/
+data/                 CSV source et échantillon TP2
+database/models/      modèle logique DBML
+database/sql/         scripts PostgreSQL TP1 et TP2
+docker/tp1/           Compose PostgreSQL du TP1
+docker/tp2/           Compose de la plateforme TP2
+pipeline/             producer, source2, agrégateur et métriques
+spark/                image et job PySpark
+monitoring/           Prometheus et Grafana
+scripts/              scripts setup et reset
+docs/                 rapports et documentation Docker
 ```
 
----
+## Documentation
 
-## 2. Prérequis
+- [Rapport TP1](<docs/Rapport%20TP1.md>)
+- [Rapport TP2](<docs/Rapport%20TP2.md>)
+- [Documentation Docker](docs/DOCKER.md)
+- [Échantillon TP2](data/sample/README.md)
 
-Il faut avoir installé :
-- Python 3
-- Docker Desktop ou Docker Engine
-- Docker démarré sur la machine
-
----
-
-## 3. Étapes pour initialiser le TP2
-
-### Étape 1 : vérifier Docker
-
-```powershell
-docker --version
-```
-
-Si cette commande ne fonctionne pas, il faut démarrer Docker Desktop ou installer Docker Engine.
-
-### Étape 2 : lancer le projet
-
-Depuis la racine du projet :
-
-```powershell
-docker compose -f docker/tp2/docker-compose.yml up -d --build
-```
-
-Cette commande construit les images et lance toute la chaîne : collecte API, Kafka, source CSV, agrégation, Data Lake, Spark, PostgreSQL, Metabase, Prometheus et Grafana.
-
-Le script `python .\scripts\setup_project.py` reste disponible comme raccourci et vérifie Docker avant le lancement.
-
-### Étape 3 : vérifier la base
-
-```powershell
-docker compose -f docker/tp2/docker-compose.yml exec postgres psql -U audit_user -d transport_velo
-```
-
-### Étape 4 : ouvrir le rapport complet
-
-Une fois le projet lancé, tu peux ouvrir le rapport détaillé ici :
-
-- [docs/Rapport TP1.md](docs/Rapport%20TP1.md)
-- [docs/TP2.md](docs/TP2.md)
-
----
-
-## 4. Rôle des fichiers principaux
-
-- [data/pc_captv_p.csv](data/pc_captv_p.csv) : données source
-- [data/sample/weather_sensor_clean_sample.csv](data/sample/weather_sensor_clean_sample.csv) : échantillon partageable de 10 événements TP2
-- [database/sql/postgresql_schema.sql](database/sql/postgresql_schema.sql) : crée les tables et charge le CSV
-- [database/models/modele_logique.dbml](database/models/modele_logique.dbml) : modèle logique
-- [docker/tp2/docker-compose.yml](docker/tp2/docker-compose.yml) : orchestration Docker de la plateforme TP2
-- [docker/tp1/docker-compose.yml](docker/tp1/docker-compose.yml) : configuration Docker PostgreSQL du TP1
-- [docs/DOCKER.md](docs/DOCKER.md) : fiche technique Docker
-- [scripts/setup_project.py](scripts/setup_project.py) : script de lancement automatique
-
----
-
-## 5. Ce qui se passe concrètement
-
-Le script Python ne remplace pas le SQL. Pour le TP2, le Compose `docker/tp2/docker-compose.yml` orchestre l'ensemble des services.
-
-Il fait :
-1. vérifier l’environnement
-2. lancer Docker Compose pour toute la plateforme
-
-Ensuite, le fichier SQL fait le vrai travail :
-- créer la base de données
-- créer les tables
-- créer les relations
-- importer le CSV
-- insérer les données de test
-
----
-
-## 6. Commande de reset
-
-Si tu veux reconstruire la base complètement :
-
-```powershell
-./scripts/reset_db.ps1
-```
-
----
-
-## 7. Documentation complémentaire
-
-- [docs/DOCKER.md](docs/DOCKER.md)
-- [docs/Rapport TP1.md](docs/Rapport%20TP1.md)
-
-Tu peux maintenant passer au rapport complet pour la partie analyse métier, dictionnaire, modèle conceptuel et logique, ainsi que la justification de la modélisation.
-
+Limite : le CSV TP1 est un inventaire, pas un historique complet des
+comptages. Le rapprochement météo/capteur du TP2 est donc un enrichissement
+spatial de démonstration.
